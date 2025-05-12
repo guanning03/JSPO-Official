@@ -56,6 +56,7 @@ if __name__ == '__main__':
         # 'rqzhang/AMC23-base',
         # 'rqzhang/NuminaMath-processed-base',
         # 'rqzhang/Numinamath-filtered-base'
+        'rqzhang/DeepScaleR-base'
     ]
 
     for dataset_path in dataset_paths:

@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=FAST-RLOO-7B-DAPO-N4+20-offload       # Job name
-#SBATCH --output=./logs/FAST-RLOO-7B-DAPO-N4+20-offload_%j.out  # Output file (%j will be replaced by job ID)
-#SBATCH --error=./logs/FAST-RLOO-7B-DAPO-N4+20-offload_%j.err   # Error file
+#SBATCH --job-name=FAST-RLOO-7B-DEEPSCALE-N4+20-offload       # Job name
+#SBATCH --output=./logs/FAST-RLOO-7B-DEEPSCALE-N4+20-offload_%j.out  # Output file (%j will be replaced by job ID)
+#SBATCH --error=./logs/FAST-RLOO-7B-DEEPSCALE-N4+20-offload_%j.err   # Error file
 #SBATCH --nodes=1                 # Number of nodes
 #SBATCH --ntasks-per-node=1       # Number of tasks per node
 #SBATCH --cpus-per-task=256         # Number of CPU cores per task
@@ -23,7 +23,7 @@ module load gcc/11.4.0
 wandb login 363018e9dc8339fae726d3b48a839f262c457194
 
 project_name='DAPO'
-exp_name='7B-Math-FAST-RLOO-dataDAPO-N4+20-offload'
+exp_name='7B-Math-FAST-RLOO-DeepScaleR-N4+20-offload'
 
 adv_estimator=rloo
 
@@ -60,7 +60,7 @@ n_resp_continue=20
 #########################
 
 n_resp_per_prompt_val=1
-total_epochs=10
+total_epochs=3
 enable_curriculum=True
 val_before_train=True
 
@@ -79,10 +79,10 @@ MODEL_PATH=${MODEL_PATH:-"Qwen/Qwen2.5-Math-7B"}
 use_chat_template=True
 val_only=False
 
-CKPT_PATH=${CKPT_PATH:-"/work/nvme/beok/rzhang15/checkpoints/GRPO/${exp_name}/$(date +%Y%m%d_%H%M%S)"}
+CKPT_PATH=${CKPT_PATH:-"/work/nvme/beok/rzhang15/checkpoints/RLOO/${exp_name}/$(date +%Y%m%d_%H%M%S)"}
 # there is one experiment that I log in RLOO folder.
 mkdir -p ${CKPT_PATH}
-TRAIN_FILE=${TRAIN_FILE:-"./data/DAPO-17k-instruct/train.parquet"}
+TRAIN_FILE=${TRAIN_FILE:-"./data/DeepScaleR-instruct/train.parquet"}
 
 # Algorithm
 temperature=1.0

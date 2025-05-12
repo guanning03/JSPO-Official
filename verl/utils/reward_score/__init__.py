@@ -19,7 +19,7 @@ def _default_compute_score(data_source, solution_str, ground_truth, extra_info=N
         from . import gsm8k
 
         res = gsm8k.compute_score(solution_str, ground_truth)
-    elif data_source.startswith('NuminaMath') or data_source.startswith('AIME') or data_source.startswith('AMC') or data_source.startswith('MATH500') or data_source.startswith('math_dapo'):
+    elif data_source.startswith('NuminaMath') or data_source.startswith('AIME') or data_source.startswith('AMC') or data_source.startswith('MATH500') or data_source.startswith('math_dapo') or data_source.startswith('DeepScaleR'):
         # from . import math
 
         # res = math.compute_score(solution_str, ground_truth)

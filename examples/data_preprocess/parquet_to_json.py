@@ -29,7 +29,9 @@ data_dir_lst = [
     # "./data/NuminaMath-processed-instruct/train.parquet",
     # "./data/merged4-instruct/train.parquet"
     # "./data/NuminaMath-allsources-base/train.parquet"
-    "./data/Numinamath-filtered-instruct/train.parquet"
+    # "./data/Numinamath-filtered-instruct/train.parquet"
+    # "./data/DeepScaleR-Qwen-base/train.parquet"
+    # "./data/DeepScaleR-instruct/train.parquet"
 ]
 
 for parquet_path in data_dir_lst:
