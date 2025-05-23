@@ -1,15 +1,15 @@
 #!/bin/bash
-#SBATCH --job-name=DAPO-7B-dataDAPO-N24-offload       # Job name
-#SBATCH --output=./logs/DAPO-7B-dataDAPO-N24-offload_%j.out  # Output file (%j will be replaced by job ID)
-#SBATCH --error=./logs/DAPO-7B-dataDAPO-N24-offload_%j.err   # Error file
+#SBATCH --job-name=FAST-DAPO-1.5B-NuminaMath-N4+20-offload       # Job name
+#SBATCH --output=./logs/FAST-DAPO-1.5B-NuminaMath-N4+20-offload_%j.out  # Output file (%j will be replaced by job ID)
+#SBATCH --error=./logs/FAST-DAPO-1.5B-NuminaMath-N4+20-offload_%j.err   # Error file
 #SBATCH --nodes=1                 # Number of nodes
 #SBATCH --ntasks-per-node=1       # Number of tasks per node
 #SBATCH --cpus-per-task=32         # Number of CPU cores per task
 #SBATCH --gpus-per-node=4              # Number of GPUs (4 GPUs per node)
 #SBATCH --mem=450G                # Memory per node
 #SBATCH --time=1-23:00:00           # Time limit (24 hours)
-#SBATCH --account=bdtp-dtai-gh    # Account name (adjust to your account)
-#SBATCH --mail-user=rqzhang@berkeley.edu  # Email address to receive notifications
+#SBATCH --account=beok-dtai-gh    # Account name (adjust to your account)
+#SBATCH --mail-user=rqzhang@berkeley.edu  # Email address to receive notifications 
 #SBATCH --mail-type=BEGIN,END,FAIL         # Send email at begin, end, or fail of job
 
 set -xeuo pipefail
@@ -23,7 +23,7 @@ module load gcc/11.4.0
 wandb login 363018e9dc8339fae726d3b48a839f262c457194
 
 project_name='DAPO'
-exp_name='7B-Math-DAPO-dataDAPO-N24-offload'
+exp_name='1.5B-Math-FAST-DAPO-NuminaMath-N4+20-offload'
 
 adv_estimator=grpo
 
@@ -51,15 +51,17 @@ enable_filter_groups=True # Whether we filter the prompts base on the pass rates
 filter_groups_metric=acc # The metric to filter the prompts.
 max_num_gen_batches=50 # The maximum number of generations to generate. If we exceed this number, we will stop generating and raise error.
 
+#########################
 train_prompt_bsz=16
 gen_prompt_bsz=64
 train_prompt_mini_bsz=16
-n_resp_per_prompt=24
-n_resp_continue=0
+n_resp_per_prompt=4
+n_resp_continue=20
+#########################
 
 n_resp_per_prompt_val=1
 total_epochs=10
-enable_curriculum=False
+enable_curriculum=True
 val_before_train=True
 
 save_freq=50
@@ -73,13 +75,14 @@ RUNTIME_ENV=${RUNTIME_ENV:-"${WORKING_DIR}/verl/trainer/runtime_env.yaml"}
 NNODES=${NNODES:-1}
 GPUS_PER_NODE=${GPUS_PER_NODE:-4}
 # Paths
-MODEL_PATH=${MODEL_PATH:-"Qwen/Qwen2.5-Math-7B"}
+MODEL_PATH=${MODEL_PATH:-"Qwen/Qwen2.5-Math-1.5B"}
 use_chat_template=True
 val_only=False
 
 CKPT_PATH=${CKPT_PATH:-"/work/hdd/beok/rzhang15/checkpoints/DAPO/${exp_name}/$(date +%Y%m%d_%H%M%S)"}
+# there is one experiment that I log in RLOO folder.
 mkdir -p ${CKPT_PATH}
-TRAIN_FILE=${TRAIN_FILE:-"./data/DAPO-17k-instruct/train.parquet"}
+TRAIN_FILE=${TRAIN_FILE:-"./data/NuminaMath-filtered-instruct/train.parquet"}
 
 # Algorithm
 temperature=1.0
@@ -95,7 +98,7 @@ offload=True
 # ray job submit --no-wait --runtime-env="${RUNTIME_ENV}" \
 #     --working-dir "${WORKING_DIR}" \
 #     -- 
-PYTHONUNBUFFERED=1 python3 -m recipe.dapo.src.main_dapo \
+PYTHONUNBUFFERED=1 python3 -m recipe.dapo.src.main_fast_dapo \
     data.train_files="${TRAIN_FILE}" \
     data.val_files=[\"./data/AIME2024-dup16-instruct/train.parquet\",\"./data/AIME2025-dup16-instruct/train.parquet\",\"./data/Math500-instruct/test.parquet\",\"./data/AMC23-dup4-instruct/train.parquet\",\"./data/DAPO-17k-instruct/test.parquet\"] \
     data.prompt_key=prompt \

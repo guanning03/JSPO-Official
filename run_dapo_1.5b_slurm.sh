@@ -1,14 +1,14 @@
 #!/bin/bash
-#SBATCH --job-name=DAPO-7B-dataDAPO-N24-offload       # Job name
-#SBATCH --output=./logs/DAPO-7B-dataDAPO-N24-offload_%j.out  # Output file (%j will be replaced by job ID)
-#SBATCH --error=./logs/DAPO-7B-dataDAPO-N24-offload_%j.err   # Error file
+#SBATCH --job-name=DAPO-1.5B-NuminaMath-N24-offload       # Job name
+#SBATCH --output=./logs/DAPO-1.5B-NuminaMath-N24-offload_%j.out  # Output file (%j will be replaced by job ID)
+#SBATCH --error=./logs/DAPO-1.5B-NuminaMath-N24-offload_%j.err   # Error file
 #SBATCH --nodes=1                 # Number of nodes
 #SBATCH --ntasks-per-node=1       # Number of tasks per node
 #SBATCH --cpus-per-task=32         # Number of CPU cores per task
 #SBATCH --gpus-per-node=4              # Number of GPUs (4 GPUs per node)
 #SBATCH --mem=450G                # Memory per node
 #SBATCH --time=1-23:00:00           # Time limit (24 hours)
-#SBATCH --account=bdtp-dtai-gh    # Account name (adjust to your account)
+#SBATCH --account=beok-dtai-gh    # Account name (adjust to your account)
 #SBATCH --mail-user=rqzhang@berkeley.edu  # Email address to receive notifications
 #SBATCH --mail-type=BEGIN,END,FAIL         # Send email at begin, end, or fail of job
 
@@ -23,7 +23,7 @@ module load gcc/11.4.0
 wandb login 363018e9dc8339fae726d3b48a839f262c457194
 
 project_name='DAPO'
-exp_name='7B-Math-DAPO-dataDAPO-N24-offload'
+exp_name='1.5B-Math-DAPO-NuminaMath-N24-offload'
 
 adv_estimator=grpo
 
@@ -73,13 +73,13 @@ RUNTIME_ENV=${RUNTIME_ENV:-"${WORKING_DIR}/verl/trainer/runtime_env.yaml"}
 NNODES=${NNODES:-1}
 GPUS_PER_NODE=${GPUS_PER_NODE:-4}
 # Paths
-MODEL_PATH=${MODEL_PATH:-"Qwen/Qwen2.5-Math-7B"}
+MODEL_PATH=${MODEL_PATH:-"Qwen/Qwen2.5-Math-1.5B"}
 use_chat_template=True
 val_only=False
 
 CKPT_PATH=${CKPT_PATH:-"/work/hdd/beok/rzhang15/checkpoints/DAPO/${exp_name}/$(date +%Y%m%d_%H%M%S)"}
 mkdir -p ${CKPT_PATH}
-TRAIN_FILE=${TRAIN_FILE:-"./data/DAPO-17k-instruct/train.parquet"}
+TRAIN_FILE=${TRAIN_FILE:-"./data/NuminaMath-filtered-instruct/train.parquet"}
 
 # Algorithm
 temperature=1.0
