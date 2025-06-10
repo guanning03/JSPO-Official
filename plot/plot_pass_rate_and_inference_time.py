@@ -48,7 +48,7 @@ def create_combined_plot(data1, data2, jsonl_file, save_dir='./fig'):
             ax1.text(bins1[i] + 0.025, counts1[i], int(counts1[i]), 
                     ha='center', va='bottom', fontsize=11, fontfamily=fontfamily)
     
-    ax1.set_title('Qwen2.5-Math-1.5B', fontsize=fontsize_title, fontfamily=fontfamily, pad=0, weight='bold')
+    ax1.set_title('DAPO-1k', fontsize=fontsize_title, fontfamily=fontfamily, pad=0, weight='bold')
     ax1.set_xlabel('')
     ax1.set_ylabel('Number of prompts', fontsize=fontsize_label, fontfamily=fontfamily, weight='bold')
     
@@ -59,7 +59,7 @@ def create_combined_plot(data1, data2, jsonl_file, save_dir='./fig'):
             ax2.text(bins2[i] + 0.025, counts2[i], int(counts2[i]), 
                     ha='center', va='bottom', fontsize=11, fontfamily=fontfamily)
     
-    ax2.set_title('Qwen2.5-Math-7B', fontsize=fontsize_title, fontfamily=fontfamily, pad=0, weight='bold')
+    ax2.set_title('Math500', fontsize=fontsize_title, fontfamily=fontfamily, pad=0, weight='bold')
     ax2.set_xlabel('')
     
     # Add common x-label for the first two subplots
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     with open(passrate_file, 'r') as f:
         data = [json.loads(line) for line in f][0]
     data1 = data['Qwen2.5-Math-1.5B']
-    data2 = data['Qwen2.5-Math-7B']
+    data2 = data['Qwen2.5-Math-1.5B-Math500']
     
     
     # Timing data file

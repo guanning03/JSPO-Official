@@ -34,7 +34,7 @@ def compute_ema(values, times, alpha=0.9):
 
 def plot_main_figure(file_paths_row1, file_paths_row2,
                     algorithm_names_row1, algorithm_names_row2,
-                    line_width=3.5,
+                    line_width=5,
                     marker_size=3,
                     marker_style='o',
                     x_lim=500,  # max steps or seconds to include
@@ -250,7 +250,7 @@ def plot_main_figure(file_paths_row1, file_paths_row2,
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.2)  # Make room for the legend at the bottom
     
-    plt.savefig(os.path.join(save_dir, 'main_figure.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(save_dir, 'main_figure.pdf'), dpi=300, bbox_inches='tight')
     plt.close()
     return fig, axes
 
@@ -273,5 +273,6 @@ if __name__ == "__main__":
         algorithm_names_row1=algorithm_names_row1,
         algorithm_names_row2=algorithm_names_row2,
         x_axis_type='time',
-        x_lim=3600*24
+        x_lim=3600*10,
+        ema_alpha=1.0
     )

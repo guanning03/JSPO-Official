@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning">
+  <meta property="og:title"
+        content="SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning"/>
+  <meta property="og:description"
+        content="Online curriculum learning that delivers 2×–6× wall-clock speed-ups for RL-trained reasoning models"/>
+  <meta property="og:image"    content="static/images/teaser_speed.png"/>
+  <meta property="og:image:width"  content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:title"
+        content="SPEED-RL: Faster Training of Reasoning Models"/>
+  <meta name="twitter:description"
+        content="Online curriculum learning that delivers 2×–6× wall-clock speed-ups for RL-trained reasoning models">
+  <meta name="twitter:image"   content="static/images/teaser_speed.png">
+  <meta name="twitter:card"    content="summary_large_image">
+  <meta name="keywords" content="SPEED, curriculum learning, RL, reasoning, language models">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SPEED-RL: Faster Training of Reasoning Models</title>
+
+  <link rel="icon" type="image/png" href="static/images/SpeculativeRejection.png">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+
+<body>
+
+<!-- ──────────────────────────── HERO ──────────────────────────── -->
+<section class="hero">
+  <div class="hero-body" style="padding:1rem;margin-top:4rem">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title" style="display:inline">
+            SPEED-RL: Faster Training of Reasoning Models<br>
+            <span style="font-size:70%;font-weight:400">
+              via Online Curriculum Learning
+            </span>
+          </h1>
+          <br><br>
+
+          <!-- Authors -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://rqzhang.github.io" target="_blank"
+                 rel="noopener noreferrer">Ruiqi&nbsp;Zhang</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://daman1209arora.github.io"  target="_blank"
+                 rel="noopener noreferrer">Daman&nbsp;Arora</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.stat.berkeley.edu/~songmei/"
+                 target="_blank" rel="noopener noreferrer">Song&nbsp;Mei</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://azanette.com" target="_blank"
+                 rel="noopener noreferrer">Andrea&nbsp;Zanette</a>
+            </span>
+          </div>
+
+          <!-- Affiliations -->
+          <div class="is-size-6 publication-authors">
+            <span class="affliation"><small>UC&nbsp;Berkeley</small></span>&nbsp;·&nbsp;
+            <span class="affliation"><small>Carnegie&nbsp;Mellon&nbsp;University</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── TLDR + BUTTONS ──────────────────────────── -->
+<section style="margin-bottom:2rem">
+  <div class="container">
+
+    <!-- TLDR -->
+    <div style="display:block;text-align:center;padding:1rem 0">
+      <p>
+        <strong>TL;DR</strong>&nbsp;&nbsp;
+        We present <em>SPEED-RL</em>—an online curriculum that <b>screens prompts on-the-fly</b>
+        and focuses RL updates on <em>intermediately difficult</em> examples, delivering
+        <b>2×–6× wall-clock speed-ups</b> with no loss in accuracy for mathematical
+        reasoning benchmarks.
+      </p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="columns is-centered">
+      <div class="column has-text-centered">
+        <span class="link-block">
+          <a href="https://arxiv.org/abs/2506.01234"
+             target="_blank" rel="noopener noreferrer"
+             class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="ai ai-arxiv"></i></span>
+            <span>arXiv</span>
+          </a>
+        </span>
+        <span class="link-block" style="margin-left:1rem">
+          <a href="https://github.com/Zanette-Labs/speed-rl"
+             target="_blank" rel="noopener noreferrer"
+             class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fab fa-github"></i></span>
+            <span>Code</span>
+          </a>
+        </span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ──────────────────────────── TEASER ──────────────────────────── -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <img src="static/images/teaser_speed.png"
+             alt="Teaser: SPEED-RL accelerates training" style="width:85%;margin:auto">
+        <p style="font-size:0.8em;margin-top:0.5rem">
+          <strong>Figure&nbsp;1</strong> – SPEED-RL reaches the same accuracy
+          as vanilla RLOO while using far fewer GPU hours, thanks to its
+          two-phase prompt-screening strategy.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── INTRODUCTION ──────────────────────────── -->
+<section class="section is-light" style="padding-top:2rem;padding-bottom:2rem">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+
+        <h2 class="title is-3" style="text-align:center;margin-top:1rem">
+          Introduction
+        </h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Reinforcement-learning (RL) fine-tuning with verifiable rewards
+            has become the de-facto route to strong mathematical
+            reasoning LLMs. Unfortunately, uniform prompt sampling spends
+            most of its compute on <em>trivial</em> or
+            <em>impossible</em> questions—wasting GPU time and yielding
+            noisy gradients.
+          </p>
+          <p>
+            <b>SPEED-RL</b> tackles this inefficiency with a lightweight,
+            fully <em>online curriculum</em>: we first generate a handful
+            of rollouts per prompt to estimate its pass-rate, discard
+            those that look too easy or too hard, and only then commit to
+            the expensive full inference and gradient update.
+          </p>
+          <p>
+            Theoretically, we prove prompts with pass-rates near 50 %
+            maximize the signal-to-noise ratio of standard policy-gradient
+            estimators; empirically, our implementation accelerates RL
+            training <strong>2×–6×</strong> on Qwen2.5-Math models across
+            five public benchmarks—all <i>without</i> sacrificing
+            final accuracy.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── ALGORITHM OVERVIEW ──────────────────────────── -->
+<section class="section is-light" style="padding:2rem 0">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+
+        <h2 class="title is-3" style="text-align:center;display:flex;align-items:center;justify-content:center">
+          <img src="static/images/fast_icon.png"
+               alt="" style="height:40px;margin-right:10px">
+          SPEED-RL Pipeline
+        </h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Each training step uses a <em>two-phase inference</em>:
+          </p>
+          <ul style="list-style-type:disc;padding-left:1rem">
+            <li><b>Screen&nbsp;(N<sub>init</sub>)</b> Generate a few
+                completions per prompt to estimate its pass-rate.</li>
+            <li><b>Continue&nbsp;(N<sub>cont</sub>)</b> Only the prompts
+                with intermediate difficulty receive the remaining
+                rollouts and enter the gradient update.</li>
+          </ul>
+          <p>
+            A single vLLM call interleaves the continuation requests of
+            the current batch with the screening requests of the next
+            batch, maximising GPU utilisation; surplus qualified prompts
+            are stored in a <em>sampling buffer</em> to keep the training
+            batch-size fixed.
+          </p>
+        </div>
+
+        <div class="figure" style="text-align:center">
+          <img src="static/images/overview_speed.png"
+               alt="SPEED-RL pipeline" style="width:90%;margin:auto">
+          <p style="font-size:0.8em;margin-top:0.5rem">
+            <strong>Figure&nbsp;2</strong> – Overview of the SPEED-RL
+            two-phase inference and buffering mechanism.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── MAIN TABLE ──────────────────────────── -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+
+        <img src="static/images/table_speedup.png"
+             alt="Wall-clock speed-up table" style="width:95%;margin:auto">
+        <p style="font-size:0.8em;margin-top:0.5rem">
+          <strong>Table&nbsp;1</strong> – Wall-clock hours to hit target
+          accuracies. SPEED-RL consistently slashes training time while
+          matching (or exceeding) vanilla RL accuracy.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── BIBTEX ──────────────────────────── -->
+<!-- <section class="section" id="BibTeX">
+  <div class="container has-text-left">
+    <h3 class="title is-5" style="margin-top:3rem">BibTeX</h3>
+<pre><code>@article{zhang2025speedrl,
+  title   = {{SPEED}-{RL}: Faster Training of Reasoning Models via Online Curriculum Learning},
+  author  = {Ruiqi Zhang and Daman Arora and Song Mei and Andrea Zanette},
+  year    = {2025},
+  eprint  = {2506.01234},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  url     = {https://arxiv.org/abs/2506.01234}
+}</code></pre>
+  </div>
+</section> -->
+
+<!-- ──────────────────────────── FOOTER ──────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content" style="text-align:center">
+          © 2025 Zhang&nbsp;· Arora&nbsp;· Mei&nbsp;· Zanette
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
