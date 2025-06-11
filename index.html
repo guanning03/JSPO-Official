@@ -167,23 +167,31 @@
 </section>
 
 <!-- ──────────────────────────── ALGORITHM OVERVIEW ──────────────────────────── -->
-<section class="section is-light" style="padding:2rem 0">
+<!-- ──────────────── TABLE 1 (formatted like the teaser) ──────────────── -->
+<section class="section hero is-light" style="padding:2rem 0">
   <div class="container is-max-desktop">
-    <div class="columns is-centered">
+    <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
 
-        <h2 class="title is-3" style="text-align:center;display:flex;align-items:center;justify-content:center">
-          <img src="./static/images/main_table.png"
-               alt="main-table" style="width:120%;margin:auto">
-          <div style="display: block; width: 65%; text-align: center; margin: 0 auto;">
-            <p style="font-size: 1.5em; margin-top: 0.5rem">
-            <strong>Table 1:</strong> Wall‑clock training hours needed for each model to reach a target accuracy on its respective benchmark. For the Qwen‑Math‑1.5B model, the targets are 0.30 on DAPO‑1k, 0.70 on MATH500, 0.4 on AMC2023, and 0.10 on AIME. For the larger Qwen2.5‑Math‑7B model, the thresholds increase to 0.45, 0.80, 0.55, and 0.18 for the same datasets, respectively. Validation time and checkpoint‑saving overhead are excluded. Values in parentheses give the corresponding wall‑clock speed‑ups.
-            $\dagger$ means the performance has not reached the threshold during the entire training process. 
-            The average speedups reported across benchmarks and training configurations are computed as the simple arithmetic mean of individual speedup values.
-            </p>
-          </div>
-        </h2>
+        <!-- the table image -->
+        <img src="./static/images/main_table.png"
+             alt="main-table"
+             style="width:120%;margin:auto">
 
+        <!-- caption -->
+        <div style="display:block;width:120%;text-align:center;margin:0 auto;">
+          <p style="font-size:1.0em;margin-top:0.5rem">
+            <strong>Table&nbsp;1:</strong> Wall-clock training hours needed for each model to reach a target
+            accuracy on its respective benchmark. For the Qwen-Math-1.5B model, the targets are&nbsp;0.30 on
+            DAPO-1k, 0.70 on MATH500, 0.40 on AMC2023, and 0.10 on AIME. For the larger
+            Qwen2.5-Math-7B model, the thresholds increase to&nbsp;0.45, 0.80, 0.55, and&nbsp;0.18 for the
+            same datasets, respectively. Validation time and checkpoint-saving overhead are excluded. Values
+            in parentheses give the corresponding wall-clock speed-ups. The symbol&nbsp;† marks runs that
+            never reached the threshold. Average speed-ups are simple means across all targets.
+          </p>
+        </div>
+
+        <!-- any explanatory text below the table -->
         <div class="content has-text-justified">
           <p>
             XXXX
@@ -194,6 +202,7 @@
     </div>
   </div>
 </section>
+
 
 <!-- ──────────────────────────── EXPERIMENTS──────────────────────────── -->
 <section class="section is-light" style="padding:2rem 0">
