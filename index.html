@@ -145,27 +145,7 @@
 
         <div class="content has-text-justified">
           <p>
-            Reinforcement-learning (RL) fine-tuning with verifiable rewards
-            has become the de-facto route to strong mathematical
-            reasoning LLMs. Unfortunately, uniform prompt sampling spends
-            most of its compute on <em>trivial</em> or
-            <em>impossible</em> questions—wasting GPU time and yielding
-            noisy gradients.
-          </p>
-          <p>
-            <b>SPEED-RL</b> tackles this inefficiency with a lightweight,
-            fully <em>online curriculum</em>: we first generate a handful
-            of rollouts per prompt to estimate its pass-rate, discard
-            those that look too easy or too hard, and only then commit to
-            the expensive full inference and gradient update.
-          </p>
-          <p>
-            Theoretically, we prove prompts with pass-rates near 50 %
-            maximize the signal-to-noise ratio of standard policy-gradient
-            estimators; empirically, our implementation accelerates RL
-            training <strong>2×–6×</strong> on Qwen2.5-Math models across
-            five public benchmarks—all <i>without</i> sacrificing
-            final accuracy.
+            XXXXX
           </p>
         </div>
 
@@ -183,26 +163,35 @@
         <h2 class="title is-3" style="text-align:center;display:flex;align-items:center;justify-content:center">
           <img src="static/images/fast_icon.png"
                alt="" style="height:40px;margin-right:10px">
-          SPEED-RL Pipeline
+          Algorithm: SPEED-RL
         </h2>
 
         <div class="content has-text-justified">
           <p>
-            Each training step uses a <em>two-phase inference</em>:
+            XXXX
           </p>
-          <ul style="list-style-type:disc;padding-left:1rem">
-            <li><b>Screen&nbsp;(N<sub>init</sub>)</b> Generate a few
-                completions per prompt to estimate its pass-rate.</li>
-            <li><b>Continue&nbsp;(N<sub>cont</sub>)</b> Only the prompts
-                with intermediate difficulty receive the remaining
-                rollouts and enter the gradient update.</li>
-          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ──────────────────────────── EXPERIMENTS──────────────────────────── -->
+<section class="section is-light" style="padding:2rem 0">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+
+        <h2 class="title is-3" style="text-align:center;display:flex;align-items:center;justify-content:center">
+          <img src="static/images/fast_icon.png"
+               alt="" style="height:40px;margin-right:10px">
+          Experiments
+        </h2>
+
+        <div class="content has-text-justified">
           <p>
-            A single vLLM call interleaves the continuation requests of
-            the current batch with the screening requests of the next
-            batch, maximising GPU utilisation; surplus qualified prompts
-            are stored in a <em>sampling buffer</em> to keep the training
-            batch-size fixed.
+            XXXX
           </p>
         </div>
 
@@ -220,24 +209,15 @@
   </div>
 </section>
 
-<!-- ──────────────────────────── MAIN TABLE ──────────────────────────── -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-
-        <img src="static/images/table_speedup.png"
-             alt="Wall-clock speed-up table" style="width:95%;margin:auto">
-        <p style="font-size:0.8em;margin-top:0.5rem">
-          <strong>Table&nbsp;1</strong> – Wall-clock hours to hit target
-          accuracies. SPEED-RL consistently slashes training time while
-          matching (or exceeding) vanilla RL accuracy.
-        </p>
-
-      </div>
-    </div>
+<!-- ──────────────────────────── ACKNOWLEDGEMENT ──────────────────────────── -->
+<section class="section" id="Acknowledgement">
+  <div class="content has-text-justified">
+    <p>
+      XXXX
+    </p>
   </div>
 </section>
+
 
 <!-- ──────────────────────────── BIBTEX ──────────────────────────── -->
 <section class="section" id="BibTeX">
