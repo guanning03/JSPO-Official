@@ -19,7 +19,7 @@
   <meta name="twitter:card"    content="summary_large_image">
   <meta name="keywords" content="SPEED, curriculum learning, RL, reasoning, language models">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SPEED-RL: Faster Training of Reasoning Models</title>
+  <title>SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning</title>
 
   <link rel="icon" type="image/png" href="static/images/SpeculativeRejection.png">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
@@ -48,17 +48,14 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-2 publication-title" style="display:inline">
-            SPEED-RL: Faster Training of Reasoning Models<br>
-            <span style="font-size:70%;font-weight:400">
-              via Online Curriculum Learning
-            </span>
+            SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning<br>
           </h1>
           <br><br>
 
           <!-- Authors -->
           <div class="is-size-5 publication-authors">
             <span class="author-block">
-              <a href="https://rqzhang.github.io" target="_blank"
+              <a href="https://github.com/rqzhangberkeley" target="_blank"
                  rel="noopener noreferrer">Ruiqi&nbsp;Zhang</a>,
             </span>
             <span class="author-block">
@@ -94,10 +91,8 @@
     <div style="display:block;text-align:center;padding:1rem 0">
       <p>
         <strong>TL;DR</strong>&nbsp;&nbsp;
-        We present <em>SPEED-RL</em>—an online curriculum that <b>screens prompts on-the-fly</b>
-        and focuses RL updates on <em>intermediately difficult</em> examples, delivering
-        <b>2×–6× wall-clock speed-ups</b> with no loss in accuracy for mathematical
-        reasoning benchmarks.
+        We accelerate rule-based RL training for LLMs with onlin curriculum learning and we achieve 
+        <b>2×–6× wall-clock speed-ups</b>.
       </p>
     </div>
 
@@ -105,7 +100,7 @@
     <div class="columns is-centered">
       <div class="column has-text-centered">
         <span class="link-block">
-          <a href="https://arxiv.org/abs/2506.01234"
+          <a href="https://arxiv.org/abs/2506.09016"
              target="_blank" rel="noopener noreferrer"
              class="external-link button is-normal is-rounded is-dark">
             <span class="icon"><i class="ai ai-arxiv"></i></span>
@@ -113,7 +108,7 @@
           </a>
         </span>
         <span class="link-block" style="margin-left:1rem">
-          <a href="https://github.com/Zanette-Labs/speed-rl"
+          <a href="https://github.com/rqzhangberkeley/DAPO"
              target="_blank" rel="noopener noreferrer"
              class="external-link button is-normal is-rounded is-dark">
             <span class="icon"><i class="fab fa-github"></i></span>
@@ -131,13 +126,8 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <img src="static/images/teaser_speed.png"
-             alt="Teaser: SPEED-RL accelerates training" style="width:85%;margin:auto">
-        <p style="font-size:0.8em;margin-top:0.5rem">
-          <strong>Figure&nbsp;1</strong> – SPEED-RL reaches the same accuracy
-          as vanilla RLOO while using far fewer GPU hours, thanks to its
-          two-phase prompt-screening strategy.
-        </p>
+        <img src="static/images/teaser_figure.pdf"
+             alt="Left: The impact of our proposed algorithm, SPEED, on accelerating RL training of LLMs. SPEED reduces inference costs by excluding extremely easy or overly difficult prompts, focusing RL fine-tuning exclusively on moderately challenging prompts that offer the highest signal-to-noise ratio. Right: We report accuracy averaged across five benchmarks and four training configurations, comparing both variants of SPEED against baseline RL algorithms. We conduct experiments using Qwen2.5-Math-7B." style="width:85%;margin:auto">
       </div>
     </div>
   </div>
