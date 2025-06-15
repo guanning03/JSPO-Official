@@ -36,56 +36,32 @@ except ImportError:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local_dir', default='./data/DeepScaleR-Qwen-base')
-    parser.add_argument('--model_type', default='base')
+    parser.add_argument('--local_dir', default='./data/DeepScaleR-instruct')
+    parser.add_argument('--model_type', default='instruct')
     parser.add_argument('--hdfs_dir', default=None)
     args = parser.parse_args()
 
-    data_source = 'DeepScaleR-Qwen-base'
-    print(f"Loading the {data_source} dataset from HuggingFace...", flush=True)
-    ds = datasets.load_dataset("agentica-org/DeepScaleR-Preview-Dataset")
-
-    instruction_following = "Let's think step by step and output the final answer within \\boxed{}."
+    ds = datasets.load_dataset("rqzhang/DeepScaleR-instruct")
 
     def make_map_fn(split):
         def process_fn(example, idx):
-            question_raw = example.pop('problem') # There are instructions in the prompt.
-            answer = example.pop('answer')
-            solution = example.pop('solution')
-            question = question_raw + " " + instruction_following
-            if args.model_type == 'base':
-                prompt = question
-            elif args.model_type == 'instruct':
-                prompt = [{
-                    "content":question,
-                    "role": "user"
-                }]
-            else:
-                raise ValueError(f"Invalid model type: {args.model_type}")
 
             return {
-                "data_source":  data_source,
-                "prompt":       prompt,
-                "ability": "math",
-                "reward_model": {
-                    "style": "rule",
-                    "ground_truth": answer
-                },
-                "extra_info": {
-                    'index': 'DeepScaleR-' + str(idx)
-                }
+                "data_source":  example.pop('data_source'),
+                "prompt":       example.pop('prompt'),
+                "ability": example.pop('ability'),
+                "reward_model": example.pop('reward_model'),
+                "extra_info": example.pop('extra_info'),
             }
         return process_fn
 
-    model_type = args.model_type
-
     train_dataset = ds['train'].map(function=make_map_fn('train'), with_indices=True)
-    import pdb; pdb.set_trace()
 
     local_dir = args.local_dir
     hdfs_dir = args.hdfs_dir
 
     train_dataset.to_parquet(os.path.join(local_dir, 'train.parquet'))
+
     if hdfs_dir is not None:
         makedirs(hdfs_dir)
         copy(src=local_dir, dst=hdfs_dir)

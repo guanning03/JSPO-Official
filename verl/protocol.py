@@ -708,7 +708,6 @@ class DataProto:
             meta_info=self.meta_info,
         )
 
-    # RZ: Added by RZ.
     def truncate(self, start=None, end=None):
         """
         Truncate the batch data at the specified start and end indices.
@@ -733,7 +732,6 @@ class DataProto:
         # Return a new DataProto object
         return DataProto(batch=sliced_batch, non_tensor_batch=self.non_tensor_batch, meta_info=self.meta_info)
 
-    # RZ: Added by RZ.
     def interleave_by_uid(self):
         """
         Rearranges the data so that responses from the same prompt UID are grouped together.
@@ -766,12 +764,6 @@ class DataProto:
 
         # Return a newly ordered DataProto
         return self.select_idxs(new_indices)
-
-
-
-
-
-
 
 import ray
 
