@@ -1,9 +1,9 @@
-<h1 style="text-align: center;">James-Stein Policy Optimization</h1>
+<h1 align="center">James-Stein Policy Optimization</h1>
 
 <div align="center">
 This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Learning for Large Reasoning Models via James-Stein Baselines</strong>" by <a href="https://github.com/guanning03">Guanning Zeng</a>, <a href="https://zhaoyizhou1123.github.io/">Zhaoyi Zhou</a>, <a href="https://daman1209arora.github.io/">Daman Aurora</a> and <a href="https://azanette.com/">Andrea Zanette</a>.
 <br>
-
+<br>
 <a href="https://zanette-labs.github.io/speed-rl/">
     <img src="https://img.shields.io/badge/Website-%231e37ff?style=for-the-badge"></a>
 <a href="https://arxiv.org/pdf/2506.09016">
