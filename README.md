@@ -1,8 +1,9 @@
-<h1 style="text-align: center;">SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning</h1>
+<h1 style="text-align: center;">James-Stein Policy Optimization</h1>
 
 <div align="center">
-This is the github repo for the paper "<strong>SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning</strong>" by Ruiqi Zhang, Daman Arora, Song Mei and Andrea Zanette. 👇
+This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Learning for Large Reasoning Models via James-Stein Baselines</strong>" by <a href="https://github.com/guanning03">Guanning Zeng</a>, <a href="https://zhaoyizhou1123.github.io/">Zhaoyi Zhou</a>, <a href="https://daman1209arora.github.io/">Daman Aurora</a> and <a href="https://azanette.com/">Andrea Zanette</a>.
 <br>
+
 <a href="https://zanette-labs.github.io/speed-rl/">
     <img src="https://img.shields.io/badge/Website-%231e37ff?style=for-the-badge"></a>
 <a href="https://arxiv.org/pdf/2506.09016">
@@ -93,14 +94,15 @@ The main engineering edits for the SPEED method lies in
 - `verl/trainer/ppo/data_controller.py`: The data controller class for SPEED. This controls the management of the data batches used for inference and for training.
 
 ## Acknowledgement
+
 This work has greatly benefited from the use of Delta’s advanced computing and data resource
 supported by the National Science Foundation (OAC 2005572) and the State of Illinois. Overall, this
 project used ACCESS grants CIS250428 for its compute resources.
 
-We thank Fahim Tajwar, Zhaoyi Zhou, Sheikh Shafayat, Guanning Zeng, Zitong Yang and Tianyu Guo for their helpful discussions and feedback. 
+The authors gratefully acknowledges <a href="https://tajwarfahim.github.io/">Fahim Tajwar</a>, <a href="https://sheikhshafayat.github.io/">Sheikh Shafayat</a> and all the other members in Zenatte's Lab for their helpful suggestions and valuable feedback.
 
-## Citation 
-To cite this work, please use the following BibTeX entry:
+## Bibtex 
+
 ```
 @misc{zhang2025speedrlfastertrainingreasoning,
       title={SPEED-RL: Faster Training of Reasoning Models via Online Curriculum Learning}, 
