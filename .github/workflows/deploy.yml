@@ -18,18 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      # 这里把项目根目录作为发布产物（要求 index.html 与 static/ 就在根目录）
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: |
-            index.html
-            static
+          path: ./
 
   deploy:
     needs: build
@@ -38,8 +32,5 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
-
-
