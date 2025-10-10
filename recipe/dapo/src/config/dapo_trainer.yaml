@@ -1,0 +1,38 @@
+hydra:
+  searchpath:
+    - file://verl/trainer/config # First Loads the base configuration from verl/trainer/config/ppo_trainer.yaml which contains all the default hyperparameters. Then loads and applies recipe/dapo/src/config/dapo_trainer.yaml which can override or extend the base configuration.
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+data:
+  gen_batch_size: ${data.train_batch_size}
+  use_chat_template: True # RZ: Added by RZ.
+
+reward_model:
+  reward_manager: dapo
+  overlong_buffer: 
+    enable: True # We try to avoid forgetting to set enable
+    len: 0
+    penalty_factor: 0.0
+    log: False
+
+algorithm:
+  filter_groups:
+    enable: False # We try to avoid forgetting to set enable
+    metric: null # acc / score / seq_reward / seq_final_reward / ...
+    max_num_gen_batches: 0 # Non-positive values mean no upper limit
+
+trainer:
+  project_name: verl-dapo
+  save_metrics_local_dir: metrics
+  save_metric_path: metrics
+
+curriculum:
+  enable: True
+  
+actor_rollout_ref:
+  rollout:
+    n: 4
+    n_continue: 12
