@@ -1,4 +1,4 @@
-name: Deploy static index to GitHub Pages
+name: Deploy static site to GitHub Pages
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -19,11 +19,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # 这里把项目根目录作为发布产物（要求 index.html 与 static/ 就在根目录）
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./
+          path: ./site   
 
   deploy:
     needs: build
