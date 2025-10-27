@@ -1,7 +1,7 @@
 <h1 align="center">James-Stein Policy Optimization</h1>
 
 <div align="center">
-This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Learning for Large Reasoning Models via James-Stein Baselines</strong>" by <a href="https://github.com/guanning03">Guanning Zeng</a>, <a href="https://zhaoyizhou1123.github.io/">Zhaoyi Zhou</a>, <a href="https://daman1209arora.github.io/">Daman Aurora</a> and <a href="https://azanette.com/">Andrea Zanette</a>.
+This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Learning for Large Reasoning Models via James-Stein Baselines</strong>" by <a href="https://scholar.google.com/citations?user=SU6ooAQAAAAJ">Guanning Zeng</a>, <a href="https://zhaoyizhou1123.github.io/">Zhaoyi Zhou</a>, <a href="https://daman1209arora.github.io/">Daman Aurora</a> and <a href="https://azanette.com/">Andrea Zanette</a>.
 <br>
 <br>
 <a href="https://zanette-labs.github.io/speed-rl/">
@@ -21,18 +21,11 @@ This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Le
     </td>
   </tr>
   <tr>
-    <td align="center">SPEED expends some compute (left figure, red region) to identify and exclude low-signal (low-SNR) prompts from the training batch, ensuring the majority of compute is effectively utilized on informative prompts. This yields an average 4× speedup across various benchmarks and training configurations (right figure; see paper for details).</td>
+    <td align="center">Overview of the James-Stein Policy Optimization (JSPO).  </td>
   </tr>
 </table>
 
-SPEED-RL is an online curriculum learning framework for accelerating rule-based RL training of reasoning models.
-
-- **Algorithm Design**: We design an online curriculum learning framework that adaptively selects questions that are moderately difficult for training based on the model's performance.
-It is widely applicable and can be combined with any rule-based RL algorithm.
-
-- **Experiments**: We evaluate the wall-clock time to reach a certain accuracy on some reasoning benchmarks for the base RL algorithm (RLOO and DAPO) and its SPEED variant. SPEED can achieve on average 2x to 6x speedups over different base RL algorithms, training configurations, and evaluation benchmarks.
-
-- **Theoretical Insights**: We provide a theoretical analysis of why the moderate difficulty questions are more informative for RL training by relatign them with the signal-to-noise ratio of the gradient estimate.
+In reinforcement learning with verifiable rewards, control variates (baselines) are commonly introduced to stablize training, canonically chosen to approximate the value function. Popular approaches such as RLOO and GRPO estimate baselines with per-prompt empirical averages of generated response, which can exhibit high variance under limited rollout budgets. Recognizing that value functions must be estimated simultaneously across all prompts in a batch, we propose a James–Stein estimator as the baseline. This approach leverages statistical shrinkage to reduce the mean squared error in the overall value function estimation, without additional computational overhead while maintaining the unbiasedness of the policy gradient estimator. Across diverse models, tasks, and rollout budgets, the James-Stein baseline consistently outperforms existing baselines, demonstrating robust variance reduction and improved training stability.
 
 ## Getting Started
 
