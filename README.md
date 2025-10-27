@@ -62,7 +62,7 @@ export CACHE=/path/to/your/cache
 Download models and datasets, for example:
 
 ```bash
-python misc/downlaod_model.py
+python misc/download_model.py
 python misc/download_knk_data.py --dataset="self-label-zanette-lab/knight-knave-3" --save_name="train"
 python misc/download_knk_data.py --dataset="self-label-zanette-lab/knight-knave-3-OOD-test100" --save_name="test"
 python misc/download_math_data.py --dataset="guanning-ai/dapo17k" --no_test
