@@ -13,7 +13,7 @@ This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Le
 <a href="https://x.com/ruiqizhang0614/status/1933527717036834843?s=12">
     <img src="https://img.shields.io/badge/Tweet-07C160?style=for-the-badge"></a>
 </div>
-
+<br>
 <table>
   <tr>
     <td align="center">
