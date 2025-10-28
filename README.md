@@ -21,11 +21,9 @@ This is the github repo for the paper "<strong>Variance-Reduced Reinforcement Le
     </td>
   </tr>
   <tr>
-    <td align="center">Overview of the James-Stein Policy Optimization (JSPO).  </td>
+    <td align="center">Overview of the James-Stein Policy Optimization (JSPO). James–Stein Policy Optimization replaces the usual per‑prompt baseline in critic‑free RL with an analytically derived, shrinkage baseline that pools information across prompts while preserving an unbiased policy‑gradient estimator. It consistently lowers gradient variance and improves training stability and accuracy for reasoning LLMs under different rollout budgets. </td>
   </tr>
 </table>
-
-In reinforcement learning with verifiable rewards, control variates (baselines) are commonly introduced to stablize training, canonically chosen to approximate the value function. Popular approaches such as RLOO and GRPO estimate baselines with per-prompt empirical averages of generated response, which can exhibit high variance under limited rollout budgets. Recognizing that value functions must be estimated simultaneously across all prompts in a batch, we propose a James–Stein estimator as the baseline. This approach leverages statistical shrinkage to reduce the mean squared error in the overall value function estimation, without additional computational overhead while maintaining the unbiasedness of the policy gradient estimator. Across diverse models, tasks, and rollout budgets, the James-Stein baseline consistently outperforms existing baselines, demonstrating robust variance reduction and improved training stability.
 
 ## Getting Started
 
