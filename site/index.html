@@ -363,7 +363,7 @@
               <strong>Adaptive Shrinkage.</strong> The shrinkage coefficient \(\lambda_i\) adapts to number of rollouts, heterogeneity of prompts, and the training progress.
             </p>
             <figure>
-              <img src="./static/images/adaptive_shrinkage.png" alt="Adaptive shrinkage coefficient over training and rollout counts" class="teaser-image">
+              <img src="./static/images/adaptive_shrinkage.png" alt="Adaptive shrinkage coefficient over training and rollout counts" class="teaser-image" style="width: 50%;">
               <figcaption>
                 <strong>Figure 2:</strong> Moving‑average shrinkage coefficient \(\lambda\) during training with 2/4/8 rollouts.
                 \(\lambda\) decreases with more rollouts and decays over time as the policy’s within‑prompt variance shrinks,
@@ -388,7 +388,7 @@
             </p>
 
             <figure>
-              <img src="./static/images/variance_reduction.png" alt="Estimated policy‑gradient variance during training: JSPO vs. RLOO" class="teaser-image">
+              <img src="./static/images/variance_reduction.png" alt="Estimated policy‑gradient variance during training: JSPO vs. RLOO" class="teaser-image", style="width: 90%;">
               <figcaption>
                 <strong>Figure 3:</strong> Estimated variance of the policy gradient during training (lower is better). With the
                 James–Stein baseline, variance consistently drops across models and tasks, yielding steadier RL updates.
