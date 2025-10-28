@@ -282,62 +282,57 @@
           <h2 class="title is-3" id="algo">James–Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
             <p>
-              <strong>Goal.</strong> Construct a low-variance, critic‑free baseline for each response in a batch by <em>shrinking</em> noisy per‑prompt means toward the batch mean in a way that adapts to (i) within‑prompt noise and (ii) across‑prompt heterogeneity—while keeping the policy‑gradient estimator unbiased. :contentReference[oaicite:0]{index=0}
-            </p>
-
-            <p><strong>Notation.</strong> At one RL step, sample <span style="white-space:nowrap;">\(n\)</span> prompts \(x_1,\dots,x_n\). For each \(x_i\), draw \(m\) responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). Let the prompt value be \(\mu_i := \mathbb{E}_{y\sim\pi_\theta(\cdot|x_i)}[r(x_i,y)]\).</p>
-
-            <p><strong>Step 1 — Leave‑one‑out (LOO) local and global means.</strong> For each prompt \(i\) and response \(j\):</p>
-            <p>
-              \[
-              \hat\mu_{i}^{-j} \;=\; \frac{1}{m-1}\!\sum_{j'\ne j} r_i^{\,j'} \quad\text{(LOO prompt mean)},\qquad
-              \hat\mu_{\,-i} \;=\; \frac{1}{n-1}\!\sum_{k\ne i} \hat\mu_k \quad\text{(LOO batch mean)},
-              \]
-              where \(\hat\mu_i = \tfrac{1}{m}\sum_{j=1}^{m} r_i^j\). These LOO statistics exclude the held‑out reward \(r_i^j\), a key property for unbiasedness. <em>(Eq. (6)–(7))</em> :contentReference[oaicite:1]{index=1}
-            </p>
-
-            <p><strong>Step 2 — Estimate within‑prompt variance \(v\) and across‑prompt spread \(s\).</strong> JSPO computes plug‑in estimates from rewards <em>excluding</em> the current prompt \(i\):</p>
-            <p>
-              \[
-              \hat v_{-i} \;=\; \frac{1}{\,n-1\,}\sum_{k\ne i}\Bigg[\frac{1}{m(m-1)}\sum_{j=1}^{m}\big(r_k^j-\hat\mu_k\big)^2\Bigg],\qquad
-              \hat s_{-i} \;=\; \frac{1}{\,n-1\,}\sum_{k\ne i}\big(\hat\mu_k-\hat\mu_{\,-i}\big)^2.
-              \]
-              Here \(\hat v_{-i}\) summarizes <em>within‑prompt noise</em> across other prompts (scaled for \(m\) rollouts), and \(\hat s_{-i}\) measures <em>across‑prompt heterogeneity</em> of mean rewards. <em>(Eq. (10))</em> :contentReference[oaicite:2]{index=2}
-            </p>
-
-            <p><strong>Step 3 — Closed‑form shrinkage coefficient.</strong> JSPO sets a per‑prompt coefficient
-              \[
-              \hat\lambda_i \;=\; \frac{n-1}{n}\cdot \frac{\hat v_{-i}}{\hat v_{-i}+\hat s_{-i}},
-              \]
-              which is the finite‑sample analogue of the optimal James–Stein coefficient derived for the batch MSE objective. <em>(Eq. (11); cf. Theorem 1)</em> :contentReference[oaicite:3]{index=3}
-            </p>
-
-            <p><strong>Step 4 — James–Stein baseline and advantage.</strong> Combine the LOO local and global means:
-              \[
-              b_{ij}^{\text{JS}} \;=\; (1-\hat\lambda_i)\,\hat\mu_{i}^{-j} \;+\; \hat\lambda_i\,\hat\mu_{\,-i},\qquad
-              A_{ij} \;=\; r_i^j - b_{ij}^{\text{JS}}.
-              \]
-              This yields a lower‑variance baseline per response with <em>no extra networks</em> or hyperparameters. <em>(Eq. (12))</em> :contentReference[oaicite:4]{index=4}
-            </p>
-
-            <p><strong>Regimes: when to shrink more vs. less.</strong> The theory characterizes the optimal \(\lambda^\*\) in terms of
-              \(v^2 := \tfrac{1}{m-1}\,\mathbb{E}[\sigma^2(x)]\) (expected within‑prompt variance) and \(s^2 := \mathrm{Var}[\mu(x)]\) (across‑prompt spread):
+              <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out (LOO) mean reward toward a LOO batch mean, with a data‑dependent coefficient. For prompt \(x_i\) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
             </p>
             <p>
               \[
-              \lambda^\* \;=\; \frac{n-1}{n}\cdot \frac{v^2}{s^2+v^2}.
+              \hat{\mu}_{i}^{-j} \;=\; \frac{1}{m-1}\!\!\sum_{j'\neq j} r_i^{\,j'}, 
+              \qquad
+              \hat{\mu}_{-i} \;=\; \frac{1}{n-1}\!\!\sum_{k\neq i} \hat{\mu}_k,
+              \quad
+              \hat{\mu}_k \;=\; \frac{1}{m}\sum_{j=1}^{m} r_k^{\,j}.
               \]
-              • If \(v^2 \gg s^2\) (few rollouts, noisy prompt means), then \(\lambda^\*\!\approx 1\): <em>shrink strongly</em> toward the batch mean.<br>
-              • If \(s^2 \gg v^2\) (prompts differ widely), then \(\lambda^\*\!\approx 0\): rely on the <em>local</em> LOO prompt mean. <em>(Theorem 1 & intuition)</em> :contentReference[oaicite:5]{index=5}
             </p>
-
-            <p><strong>Unbiasedness.</strong> Because \(b_{ij}^{\text{JS}}\) uses LOO statistics that exclude \(r_i^j\), it is independent of the paired reward. Therefore the estimator
+            <p>
+              The JSPO baseline for sample \((i,j)\) is the convex combination
+            </p>
+            <p>
               \[
-              \frac{1}{n}\sum_{i=1}^n \frac{1}{m}\sum_{j=1}^m \big(r_i^j - b_{ij}^{\text{JS}}\big)\,\nabla_\theta \log \pi_\theta(y_i^j\!\mid x_i)
+              b_{ij}^{\text{JSPO}} \;=\; (1-\hat{\lambda}_i)\,\hat{\mu}_{i}^{-j} \;+\; \hat{\lambda}_i\,\hat{\mu}_{-i},
               \]
-              remains an <em>unbiased</em> policy‑gradient estimate (cf. Proposition 1). :contentReference[oaicite:6]{index=6}
+              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. In population form, <em>Theorem&nbsp;1</em> gives the optimal coefficient
             </p>
-          </div>
+            <p>
+              \[
+              (\lambda_i^\ast)\;=\;\frac{n-1}{n}\cdot \frac{v^2}{\,s^2+v^2\,},
+              \qquad
+              v^2 \;=\; \frac{1}{m-1}\,\mathbb{E}_{x}\!\big[\sigma^2(x)\big],\quad
+              s^2 \;=\; \mathrm{Var}_{x}\!\big[\mu(x)\big],
+              \]
+              with \(\sigma^2(x)=\mathrm{Var}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\) and \(\mu(x)=\mathbb{E}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\). (<em>See</em> Eqs.&nbsp;(6)–(9) on p.&nbsp;5.) :contentReference[oaicite:0]{index=0}
+            </p>
+            <p>
+              For implementation, we estimate the components from the current batch using plug‑in LOO statistics:
+            </p>
+            <p>
+              \[
+              \hat{v}_{-i} \;=\; \frac{1}{n-1}\sum_{k\neq i}\left[\frac{1}{m(m-1)}\sum_{j=1}^{m}\big(r_k^{\,j}-\hat{\mu}_k\big)^2\right],
+              \qquad
+              \hat{s}_{-i} \;=\; \frac{1}{n-1}\sum_{k\neq i}\big(\hat{\mu}_k-\hat{\mu}_{-i}\big)^2,
+              \]
+              yielding the per‑prompt shrinkage
+              \[
+              \hat{\lambda}_i \;=\; \frac{n-1}{n}\cdot \frac{\hat{v}_{-i}}{\,\hat{v}_{-i}+\hat{s}_{-i}\,}.
+              \]
+              Substituting into the baseline gives \(b_{ij}^{\text{JSPO}}\) above. (<em>See</em> Eqs.&nbsp;(10)–(12) on p.&nbsp;6.) :contentReference[oaicite:1]{index=1}
+            </p>
+            <p>
+              The shrinkage adapts to data: when \(v^2 \gg s^2\) (few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and JSPO leans on the batch mean; when \(s^2 \gg v^2\) (prompts are heterogeneous), \(\hat{\lambda}_i \approx 0\) and JSPO reduces to the prompt LOO mean. (<em>Intuition of Theorem</em> on p.&nbsp;6.) :contentReference[oaicite:2]{index=2}
+            </p>
+            <p>
+              Finally, because each \(b_{ij}^{\text{JSPO}}\) leaves out its paired reward \(r_{ij}\), it is independent of that reward; thus the policy‑gradient estimator \( (r_{ij}-b_{ij}^{\text{JSPO}})\nabla_\theta \log \pi_\theta(y_{ij}\!\mid x_i)\) remains <em>unbiased</em> (Proposition&nbsp;1, p.&nbsp;3). :contentReference[oaicite:3]{index=3}
+            </p>
+          </div>          
 
 
           <!-- Experiments -->
