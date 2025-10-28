@@ -356,7 +356,11 @@
           <h2 class="title is-3" id="analysis">Analysis</h2>
           <div class="content has-text-justified">
             <p>
-              <strong>Adaptive Shrinkage.</strong> 
+              We focus on providing insights into two key training dynamics that reveal the advantage of JSPO: namely, the <strong>adaptive shrinkage</strong> of the James–Stein coefficient and the <strong>reduced variance</strong> of the policy
+              gradient.
+            </p>
+            <p>
+              <strong>Adaptive Shrinkage.</strong> The shrinkage coefficient \(\lambda_i\) adapts to number of rollouts, heterogeneity of prompts, and the training progress.
             </p>
             <figure>
               <img src="./static/images/adaptive_shrinkage.png" alt="Adaptive shrinkage coefficient over training and rollout counts" class="teaser-image">
