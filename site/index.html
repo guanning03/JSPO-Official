@@ -282,7 +282,7 @@
           <h2 class="title is-3" id="algo">James–Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
             <p>
-              <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out mean reward toward a leave-one-out batch mean, with a data‑dependent coefficient. For prompt \(x_i\) (\(i=1,\dots,n\)) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
+              Based on the Stein's paradox in statistics, <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out mean reward toward a leave-one-out batch mean, with a data‑dependent coefficient. For prompt \(x_i\) (\(i=1,\dots,n\)) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
             </p>
             <p>
               \[
@@ -300,7 +300,7 @@
               \[
               b_{ij}^{\text{JSPO}} \;=\; (1-\hat{\lambda}_i)\,\hat{\mu}_{i}^{-j} \;+\; \hat{\lambda}_i\,\hat{\mu}_{-i},
               \]
-              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. The Jamse-Stein shrinkage coefficient is given by:
+              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. The optimal shrinkage coefficient is given by:
             </p>
             <p>
               \[
@@ -320,17 +320,14 @@
               \qquad
               \hat{s}_{-i} \;=\; \frac{1}{n-1}\sum_{k\neq i}\big(\hat{\mu}_k-\hat{\mu}_{-i}\big)^2,
               \]
-              yielding the per‑prompt shrinkage
+              yielding the per‑prompt shrinkage coefficient
               \[
               \hat{\lambda}_i \;=\; \frac{n-1}{n}\cdot \frac{\hat{v}_{-i}}{\,\hat{v}_{-i}+\hat{s}_{-i}\,}.
               \]
               Substituting into the baseline gives \(b_{ij}^{\text{JSPO}}\) above. 
             </p>
             <p>
-              The shrinkage adapts to data: when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and JSPO adaptively leaning towards the batch mean; when \(s^2 \gg v^2\) (prompts are heterogeneous), \(\hat{\lambda}_i \approx 0\) and JSPO adaptively leaning towards the prompt mean. 
-            </p>
-            <p>
-              Because each \(b_{ij}^{\text{JSPO}}\) leaves out its paired reward \(r_{ij}\), it is independent of that reward; thus the policy‑gradient estimator \( (r_{ij}-b_{ij}^{\text{JSPO}})\nabla_\theta \log \pi_\theta(y_{ij}\!\mid x_i)\) remains <em>unbiased</em>
+              when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and JSPO adaptively leaning towards the batch mean; when \(s^2 \gg v^2\) (e.g. sufficient rollouts, heterogeneous training data), \(\hat{\lambda}_i \approx 0\) and JSPO adaptively leaning towards the prompt mean. 
             </p>
           </div>          
 
