@@ -215,38 +215,22 @@
           <h2 class="title is-3" id="srt">Introduction</h2>
           <div class="content has-text-justified">
             <p>
-              Training large language models (LLMs) with reinforcement learning (RL) against verifiable rewards significantly enhances their reasoning capabilities. However, such methods remain computationally expensive, primarily due to inefficient uniform sampling of training prompts and the associated heavy inference costs.
+              We introduce <strong>James–Stein Policy Optimization (JSPO)</strong> , a critic‑free, variance‑reduced reinforcement learning method for large reasoning models. Regarding that policy gradient is estimated within a batch of prompts, JSPO replaces the usual per‑prompt baseline (e.g., RLOO, GRPO) with an <em>adaptive James–Stein shrinkage baseline</em> that shares information across prompts to suppress variance in gradient estimation while preserving unbiased policy‑gradient updates.
             </p>
             <ul>
-              <li>In typical datasets (e.g., that used in <a href="https://arxiv.org/abs/2503.14476" target="_blank" rel="noopener noreferrer">DAPO</a>), many prompts are either trivially easy or excessively difficult relative to the model's current training state.</li>
-              <li>LLMs spend most of the training time on inference, generating all-correct or all-incorrect completions for those prompts that are either trivially easy or excessively difficult.</li>
+              <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
+              <li><strong>Unbiased by construction.</strong> A two‑level leave‑one‑out design makes the baseline independent of the held‑out reward, so the policy‑gradient estimator remains unbiased.</li>
+              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, and DAPO, no critic network, no new hyperparameters, and negligible overhead.</li>
+              <li><strong>Better sample efficiency & stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
-              <img src="./static/images/passrate_distribution_inference_time.png" alt="Pass rate distribution and timing" class="teaser-image">
-              <figcaption><strong>Figure 2:</strong> Pass rate distribution in DAPO-17k evaluated by Qwen2.5-Math-1.5B (left) and Qwen2.5-Math-7B (middle). Most of the prompts have close to zero pass rate, i.e., they are too difficult for the model. Right: Average per-step inference and training times while running RLOO on the Qwen2.5-Math-7B model. More than 2/3 of the training time is spent on inference.</figcaption>
+              <img src="./static/images/teaser_figure.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> JSPO replaces noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and faster, steadier learning. </figcaption>
             </figure>
-            <p>
-              Intuitively, if the model consistently succeeds or fails, it learns little. Formally, prompts with pass rates near 0% or 100% produce zero gradients since the advantage function approaches zero. This can be formally shown as follows:
-            </p>
-            <p>
-              \[
-              \nabla_{\theta} J_\text{prompt}(\theta) =
-              \mathbb{E}_{\text{response} \sim \pi(\cdot \mid \text{prompt})}
-              \left[
-              \underbrace{A(\text{response})}_{=0}
-              \nabla_{\theta} \log \pi(\text{response} \mid \text{prompt})
-              \right]
-              = 0,
-              \quad\quad \text{if the pass rate is } 0\% \text{ or } 100\%.
-              \]
-            </p>
-            <p>
-              Consequently, we can exclude them.
-            </p>
-          </div> <!-- /.content -->
+          </div>          
 
           <!-- SPEED-RL: Algorithm Design -->
-          <h2 class="title is-3" id="algo">SPEED-RL: Algorithm Design</h2>
+          <h2 class="title is-3" id="algo">James-Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
             <p>
               We introduce <strong>Selective Prompting with Efficient Estimation of Difficulty (SPEED)</strong>, which implements a curriculum learning strategy that efficiently screens prompts to identify those with intermediate pass rates—thus maximizing the signal-to-noise ratio (SNR)—without performing full inference on them (for more details on the Signal-to-Noise Ratio, see the end of the blog).
@@ -287,7 +271,7 @@
             </figure>
           </div> <!-- /.content -->
 
-        <h2 class="title is-3" id="srt">Insights: Why Moderately Difficult Prompts?</h2>
+        <h2 class="title is-3" id="srt">Analysis</h2>
         <div class="content has-text-justified">
         <p>
         We contribute with an <strong> information-theoretic </strong> justification for training on intermediate-difficulty prompts. 
@@ -354,7 +338,7 @@
   <div class="container">
     <div class="columns is-centered">
       <p>
-        Corresponding Authors: <a href="mailto:rqzhang@berkeley.edu">Ruiqi Zhang</a>, <a href="mailto:zanette@cmu.edu">Andrea Zanette</a>.<br>
+        Corresponding Authors: <a href="mailto:zgn21@mails.tsinghua.edu.cn">Guanning Zeng</a>, <a href="mailto:zanette@cmu.edu">Andrea Zanette</a>.<br>
       </p>
     </div>
   </div>
