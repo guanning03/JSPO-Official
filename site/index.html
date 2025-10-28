@@ -250,7 +250,7 @@
             </p> -->
           
             <p>
-              A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). For a fixed prompt \(x\),
+              A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\) (e.g. In all actor-critic methods, the value function is estimated from a critic network which serves as the baseline). For a fixed prompt \(x\),
             </p>
             <p>
               \[
@@ -286,27 +286,67 @@
             </p>
           </div>
           
-          <!-- SPEED-RL: Algorithm Design -->
-          <h2 class="title is-3" id="algo">James-Stein Policy Optimization (JSPO): Algorithm Design</h2>
+          <!-- James–Stein Policy Optimization (JSPO): Algorithm Design -->
+          <h2 class="title is-3" id="algo">James–Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
             <p>
-              We introduce <strong>Selective Prompting with Efficient Estimation of Difficulty (SPEED)</strong>, which implements a curriculum learning strategy that efficiently screens prompts to identify those with intermediate pass rates—thus maximizing the signal-to-noise ratio (SNR)—without performing full inference on them (for more details on the Signal-to-Noise Ratio, see the end of the blog).
+              <strong>Goal.</strong> Construct a low-variance, critic‑free baseline for each response in a batch by <em>shrinking</em> noisy per‑prompt means toward the batch mean in a way that adapts to (i) within‑prompt noise and (ii) across‑prompt heterogeneity—while keeping the policy‑gradient estimator unbiased. :contentReference[oaicite:0]{index=0}
+            </p>
+
+            <p><strong>Notation.</strong> At one RL step, sample <span style="white-space:nowrap;">\(n\)</span> prompts \(x_1,\dots,x_n\). For each \(x_i\), draw \(m\) responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). Let the prompt value be \(\mu_i := \mathbb{E}_{y\sim\pi_\theta(\cdot|x_i)}[r(x_i,y)]\).</p>
+
+            <p><strong>Step 1 — Leave‑one‑out (LOO) local and global means.</strong> For each prompt \(i\) and response \(j\):</p>
+            <p>
+              \[
+              \hat\mu_{i}^{-j} \;=\; \frac{1}{m-1}\!\sum_{j'\ne j} r_i^{\,j'} \quad\text{(LOO prompt mean)},\qquad
+              \hat\mu_{\,-i} \;=\; \frac{1}{n-1}\!\sum_{k\ne i} \hat\mu_k \quad\text{(LOO batch mean)},
+              \]
+              where \(\hat\mu_i = \tfrac{1}{m}\sum_{j=1}^{m} r_i^j\). These LOO statistics exclude the held‑out reward \(r_i^j\), a key property for unbiasedness. <em>(Eq. (6)–(7))</em> :contentReference[oaicite:1]{index=1}
+            </p>
+
+            <p><strong>Step 2 — Estimate within‑prompt variance \(v\) and across‑prompt spread \(s\).</strong> JSPO computes plug‑in estimates from rewards <em>excluding</em> the current prompt \(i\):</p>
+            <p>
+              \[
+              \hat v_{-i} \;=\; \frac{1}{\,n-1\,}\sum_{k\ne i}\Bigg[\frac{1}{m(m-1)}\sum_{j=1}^{m}\big(r_k^j-\hat\mu_k\big)^2\Bigg],\qquad
+              \hat s_{-i} \;=\; \frac{1}{\,n-1\,}\sum_{k\ne i}\big(\hat\mu_k-\hat\mu_{\,-i}\big)^2.
+              \]
+              Here \(\hat v_{-i}\) summarizes <em>within‑prompt noise</em> across other prompts (scaled for \(m\) rollouts), and \(\hat s_{-i}\) measures <em>across‑prompt heterogeneity</em> of mean rewards. <em>(Eq. (10))</em> :contentReference[oaicite:2]{index=2}
+            </p>
+
+            <p><strong>Step 3 — Closed‑form shrinkage coefficient.</strong> JSPO sets a per‑prompt coefficient
+              \[
+              \hat\lambda_i \;=\; \frac{n-1}{n}\cdot \frac{\hat v_{-i}}{\hat v_{-i}+\hat s_{-i}},
+              \]
+              which is the finite‑sample analogue of the optimal James–Stein coefficient derived for the batch MSE objective. <em>(Eq. (11); cf. Theorem 1)</em> :contentReference[oaicite:3]{index=3}
+            </p>
+
+            <p><strong>Step 4 — James–Stein baseline and advantage.</strong> Combine the LOO local and global means:
+              \[
+              b_{ij}^{\text{JS}} \;=\; (1-\hat\lambda_i)\,\hat\mu_{i}^{-j} \;+\; \hat\lambda_i\,\hat\mu_{\,-i},\qquad
+              A_{ij} \;=\; r_i^j - b_{ij}^{\text{JS}}.
+              \]
+              This yields a lower‑variance baseline per response with <em>no extra networks</em> or hyperparameters. <em>(Eq. (12))</em> :contentReference[oaicite:4]{index=4}
+            </p>
+
+            <p><strong>Regimes: when to shrink more vs. less.</strong> The theory characterizes the optimal \(\lambda^\*\) in terms of
+              \(v^2 := \tfrac{1}{m-1}\,\mathbb{E}[\sigma^2(x)]\) (expected within‑prompt variance) and \(s^2 := \mathrm{Var}[\mu(x)]\) (across‑prompt spread):
             </p>
             <p>
-              SPEED breaks down inference into two phases:
+              \[
+              \lambda^\* \;=\; \frac{n-1}{n}\cdot \frac{v^2}{s^2+v^2}.
+              \]
+              • If \(v^2 \gg s^2\) (few rollouts, noisy prompt means), then \(\lambda^\*\!\approx 1\): <em>shrink strongly</em> toward the batch mean.<br>
+              • If \(s^2 \gg v^2\) (prompts differ widely), then \(\lambda^\*\!\approx 0\): rely on the <em>local</em> LOO prompt mean. <em>(Theorem 1 & intuition)</em> :contentReference[oaicite:5]{index=5}
             </p>
-            <ul>
-              <li><strong>Screening Phase:</strong> Generate a small number (e.g., <code>N<sub>init</sub> = 4</code>) of completions for each prompt. Prompts clearly at extremes (0% or 100%) pass rate are immediately excluded.</li>
-              <li><strong>Continuation Phase:</strong> Perform extensive inference (e.g., <code>N<sub>cont</sub> = 20</code> additional completions per prompt) only on the intermediate-difficulty prompts identified as informative.</li>
-            </ul>
-            <p>
-              This targeted approach allocates the majority of compute to high-value prompts. To avoid inference overhead from multiple calls, SPEED combines both phases into a single inference batch: simultaneously completing the continuation phase for current prompts and the preliminary screening phase for future prompts within one single call to the inference engine (e.g., vLLM). See the paper for additional technical details. Moreover, SPEED integrates seamlessly with popular rule-based RL algorithms, including RLOO, GRPO, DAPO.
+
+            <p><strong>Unbiasedness.</strong> Because \(b_{ij}^{\text{JS}}\) uses LOO statistics that exclude \(r_i^j\), it is independent of the paired reward. Therefore the estimator
+              \[
+              \frac{1}{n}\sum_{i=1}^n \frac{1}{m}\sum_{j=1}^m \big(r_i^j - b_{ij}^{\text{JS}}\big)\,\nabla_\theta \log \pi_\theta(y_i^j\!\mid x_i)
+              \]
+              remains an <em>unbiased</em> policy‑gradient estimate (cf. Proposition 1). :contentReference[oaicite:6]{index=6}
             </p>
-            <figure>
-              <img src="./static/images/algorithm_box.png" alt="Algorithm schematic" class="teaser-image">
-              <figcaption><strong>Algorithm schematic:</strong> Simplified two-phase SPEED procedure.</figcaption>
-            </figure>
-          </div> <!-- /.content -->
+          </div>
+
 
           <!-- Experiments -->
           <h2 class="title is-3" id="experiments">Experiments</h2>
