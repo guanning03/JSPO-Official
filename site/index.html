@@ -197,17 +197,17 @@
           <!-- Overview -->
           <div class="content has-text-justified">
             <p>
-              We introduce <strong>SPEED</strong>, an online curriculum learning framework to accelerate reinforcement learning (RL) training of large reasoning models by training on prompts with high learning signal.
+              We introduce <strong>James–Stein Policy Optimization (JSPO)</strong>, a critic‑free, variance‑reduced reinforcement learning method for large reasoning models. Regarding that policy gradient is estimated within a batch of prompts, JSPO replaces the usual per‑prompt baseline (e.g., RLOO, GRPO) with an <em>adaptive James–Stein shrinkage baseline</em> that shares information across prompts to suppress variance in gradient estimation while preserving unbiased policy‑gradient updates.
             </p>
             <ul>
-              <li>Traditional RL training often expends most of the compute resources on prompts with low learning signals (pass rates near 0% or 100%), which have low <em>signal-to-noise ratio</em> (SNR), a notion formalized later in the blog post.</li>
-              <li><strong>SPEED</strong> efficiently identifies and excludes these low-SNR prompts <strong>before</strong> creating training batches for the RL trainer.</li>
-              <li>This ensures computational resources (inference and gradient updates) are focused on useful prompts (high-SNR ones).</li>
-              <li>SPEED is compatible with Rule-based RL algorithms like GRPO, REINFORCE, RLOO, and DAPO, achieving average training speedups <strong>from 2x to 6x</strong> over them.</li>
+              <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
+              <li><strong>Unbiased by construction.</strong> A two‑level leave‑one‑out design makes the baseline independent of the held‑out reward, so the policy‑gradient estimator remains unbiased.</li>
+              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, and DAPO, no critic network, no new hyperparameters, and negligible overhead.</li>
+              <li><strong>Better sample efficiency & stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
-              <img src="./static/images/teaser_figure.png" alt="Teaser image" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> SPEED expends some compute (left figure, red region) to identify and exclude low-signal (low-SNR) prompts from the training batch, ensuring the majority of compute is effectively utilized on informative prompts. This yields an average 4× speedup across various benchmarks and training configurations (right figure; see paper for details).</figcaption>
+              <img src="./static/images/teaser_figure.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> JSPO replaces noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and faster, steadier learning.</figcaption>
             </figure>
           </div> <!-- /.content -->
 
