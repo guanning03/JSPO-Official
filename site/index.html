@@ -202,7 +202,7 @@
             <ul>
               <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
               <li><strong>Unbiased by construction.</strong> A two‑level leave‑one‑out design makes the baseline independent of the held‑out reward, so the policy‑gradient estimator remains unbiased.</li>
-              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, and DAPO, no critic network, no new hyperparameters, and negligible overhead.</li>
+              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, or DAPO, without introducing additional hyperparameters or computational overhead.</li>
               <li><strong>Better sample efficiency & stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
@@ -211,24 +211,80 @@
             </figure>
           </div> <!-- /.content -->
 
-          <!-- INTRODUCTION -->
-          <h2 class="title is-3" id="srt">Introduction</h2>
           <div class="content has-text-justified">
             <p>
-              We introduce <strong>James–Stein Policy Optimization (JSPO)</strong> , a critic‑free, variance‑reduced reinforcement learning method for large reasoning models. Regarding that policy gradient is estimated within a batch of prompts, JSPO replaces the usual per‑prompt baseline (e.g., RLOO, GRPO) with an <em>adaptive James–Stein shrinkage baseline</em> that shares information across prompts to suppress variance in gradient estimation while preserving unbiased policy‑gradient updates.
+              We consider Reinforcement Learning with Verifiable Rewards (RLVR). Let the policy be <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, reward \(r(x,y)\in\mathbb{R}\), and the objective
+            </p>
+            <p>
+              \[
+              J(\theta) \;:=\; \mathbb{E}_{x\sim\mathcal{D},\,y\sim\pi_\theta(\cdot\mid x)}\,[\,r(x,y)\,] \, .
+              \]
+            </p>
+            <p>
+              At each RL step, we sample \(n\) prompts \(x_1,\dots,x_n\) and, for each prompt \(x_i\), generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). Using per‑sample baselines \(b_i^j\), the (critic‑free) batch policy‑gradient estimator is
+            </p>
+            <p>
+              \[
+              g(x,Y;\theta)
+              \;:=\;
+              \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}
+              \bigl(r_i^j - b_i^j\bigr)\,\nabla_\theta \log \pi_\theta(y_i^j \mid x_i)\,.
+              \]
+            </p>
+            <p>
+              This estimator is <em>unbiased</em> whenever each baseline \(b_i^j\) is independent of its paired reward \(r_i^j\); leave‑one‑out constructions (e.g., RLOO‑style) enforce this independence in practice.
+            </p>
+          
+            <p>
+              To measure estimator quality, we track the variance (trace of the covariance) of the vector‑valued gradient:
+            </p>
+            <p>
+              \[
+              \mathrm{Var}[g]
+              \;:=\;
+              \operatorname{Tr}\,\mathrm{Var}\!\big[g(x,Y;\theta)\big]
+              \;=\;
+              \mathbb{E}\bigl[\;\|\,g(x,Y;\theta)-\nabla_\theta J(\theta)\,\|_2^2\bigr]\,.
+              \]
+            </p>
+          
+            <p>
+              In general, the variance‑minimizing baseline depends on both the prompt and the response through the score‑function norm, which is impractical to compute at scale. A standard and accurate simplification is to optimize a <em>value‑function baseline</em> \(b(x)\) by minimizing the mean‑squared error (MSE) of the centered return, ignoring the score‑norm factor. For a fixed prompt \(x\) with \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\),
+            </p>
+            <p>
+              \[
+              \mathbb{E}_{y}\!\big[(r(x,y)-b(x))^2\big]
+              \;=\;
+              \underbrace{\mathrm{Var}_{y}[r(x,y)]}_{\text{irreducible}} \;+\;
+              \underbrace{(b(x)-\mu(x))^2}_{\text{baseline MSE}}\,,
+              \]
+            </p>
+            <p>
+              so variance reduction reduces to estimating the value function \(\mu(x)\) accurately. In the multi‑prompt setting, the target is the <em>batch</em> MSE over all prompts and rollouts:
+            </p>
+            <p>
+              \[
+              \mathrm{MSE}
+              \;:=\;
+              \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m}
+              \mathbb{E}\bigl[(b_i^j - \mu_i)^2\bigr],
+              \quad \mu_i := \mathbb{E}_{y\sim\pi_\theta(\cdot\mid x_i)}[r(x_i,y)]\,.
+              \]
+            </p>
+          
+            <p>
+              This batch objective reveals a clear <strong>variance–bias trade‑off</strong> in baseline design:
             </p>
             <ul>
-              <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
-              <li><strong>Unbiased by construction.</strong> A two‑level leave‑one‑out design makes the baseline independent of the held‑out reward, so the policy‑gradient estimator remains unbiased.</li>
-              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, and DAPO, no critic network, no new hyperparameters, and negligible overhead.</li>
-              <li><strong>Better sample efficiency & stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
+              <li><strong>Per‑prompt means (e.g., GRPO/RLOO):</strong> set \(b_i^j\) near the prompt’s empirical mean. This minimizes bias to \(\mu_i\) but can be <em>high variance</em> when \(m\) is small.</li>
+              <li><strong>Batch/global means (e.g., BLOO/REINFORCE++):</strong> average across prompts to reduce variance, but this introduces <em>bias</em> when prompts’ true values \(\mu_i\) differ.</li>
             </ul>
-            <figure>
-              <img src="./static/images/teaser_figure.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> JSPO replaces noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and faster, steadier learning. </figcaption>
-            </figure>
-          </div>          
-
+          
+            <p>
+              Because we must estimate <em>many</em> prompt values simultaneously, neither extreme is optimal in batch MSE. The James–Stein perspective suggests <em>shrinking</em> each prompt’s baseline toward the batch mean by a data‑dependent amount, balancing variance reduction and bias while preserving unbiased gradients via leave‑one‑out independence.
+            </p>
+          </div>
+          
           <!-- SPEED-RL: Algorithm Design -->
           <h2 class="title is-3" id="algo">James-Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
