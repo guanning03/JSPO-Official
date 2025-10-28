@@ -282,7 +282,7 @@
           <h2 class="title is-3" id="algo">James–Stein Policy Optimization (JSPO): Algorithm Design</h2>
           <div class="content has-text-justified">
             <p>
-              <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out (LOO) mean reward toward a LOO batch mean, with a data‑dependent coefficient. For prompt \(x_i\) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
+              <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out mean reward toward a leave-one-out batch mean, with a data‑dependent coefficient. For prompt \(x_i\) (\(i=1,\dots,n\)) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
             </p>
             <p>
               \[
@@ -294,13 +294,13 @@
               \]
             </p>
             <p>
-              The JSPO baseline for sample \((i,j)\) is the convex combination
+              The JSPO baseline for sample \((i,j)\) is the adaptive combination between the LOO prompt mean and the LOO batch mean:
             </p>
             <p>
               \[
               b_{ij}^{\text{JSPO}} \;=\; (1-\hat{\lambda}_i)\,\hat{\mu}_{i}^{-j} \;+\; \hat{\lambda}_i\,\hat{\mu}_{-i},
               \]
-              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. In population form, <em>Theorem&nbsp;1</em> gives the optimal coefficient
+              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. The Jamse-Stein shrinkage coefficient is given by:
             </p>
             <p>
               \[
@@ -309,10 +309,10 @@
               v^2 \;=\; \frac{1}{m-1}\,\mathbb{E}_{x}\!\big[\sigma^2(x)\big],\quad
               s^2 \;=\; \mathrm{Var}_{x}\!\big[\mu(x)\big],
               \]
-              with \(\sigma^2(x)=\mathrm{Var}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\) and \(\mu(x)=\mathbb{E}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\). (<em>See</em> Eqs.&nbsp;(6)–(9) on p.&nbsp;5.) :contentReference[oaicite:0]{index=0}
+              with \(\sigma^2(x)=\mathrm{Var}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\) and \(\mu(x)=\mathbb{E}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\).
             </p>
             <p>
-              For implementation, we estimate the components from the current batch using plug‑in LOO statistics:
+              In addition, we estimate the components from the current batch using plug‑in statistics:
             </p>
             <p>
               \[
@@ -324,13 +324,13 @@
               \[
               \hat{\lambda}_i \;=\; \frac{n-1}{n}\cdot \frac{\hat{v}_{-i}}{\,\hat{v}_{-i}+\hat{s}_{-i}\,}.
               \]
-              Substituting into the baseline gives \(b_{ij}^{\text{JSPO}}\) above. (<em>See</em> Eqs.&nbsp;(10)–(12) on p.&nbsp;6.) :contentReference[oaicite:1]{index=1}
+              Substituting into the baseline gives \(b_{ij}^{\text{JSPO}}\) above. 
             </p>
             <p>
-              The shrinkage adapts to data: when \(v^2 \gg s^2\) (few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and JSPO leans on the batch mean; when \(s^2 \gg v^2\) (prompts are heterogeneous), \(\hat{\lambda}_i \approx 0\) and JSPO reduces to the prompt LOO mean. (<em>Intuition of Theorem</em> on p.&nbsp;6.) :contentReference[oaicite:2]{index=2}
+              The shrinkage adapts to data: when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and JSPO adaptively leaning towards the batch mean; when \(s^2 \gg v^2\) (prompts are heterogeneous), \(\hat{\lambda}_i \approx 0\) and JSPO adaptively leaning towards the prompt mean. 
             </p>
             <p>
-              Finally, because each \(b_{ij}^{\text{JSPO}}\) leaves out its paired reward \(r_{ij}\), it is independent of that reward; thus the policy‑gradient estimator \( (r_{ij}-b_{ij}^{\text{JSPO}})\nabla_\theta \log \pi_\theta(y_{ij}\!\mid x_i)\) remains <em>unbiased</em> (Proposition&nbsp;1, p.&nbsp;3). :contentReference[oaicite:3]{index=3}
+              Because each \(b_{ij}^{\text{JSPO}}\) leaves out its paired reward \(r_{ij}\), it is independent of that reward; thus the policy‑gradient estimator \( (r_{ij}-b_{ij}^{\text{JSPO}})\nabla_\theta \log \pi_\theta(y_{ij}\!\mid x_i)\) remains <em>unbiased</em>
             </p>
           </div>          
 
