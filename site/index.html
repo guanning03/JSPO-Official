@@ -236,7 +236,7 @@
               This estimator is <em>unbiased</em> whenever each baseline \(b_i^j\) is independent of its paired reward \(r_i^j\); leave‑one‑out constructions (e.g., RLOO‑style) enforce this independence in practice.
             </p>
           
-            <p>
+            <!-- <p>
               To measure estimator quality, we track the variance (trace of the covariance) of the vector‑valued gradient:
             </p>
             <p>
@@ -247,10 +247,10 @@
               \;=\;
               \mathbb{E}\bigl[\;\|\,g(x,Y;\theta)-\nabla_\theta J(\theta)\,\|_2^2\bigr]\,.
               \]
-            </p>
+            </p> -->
           
             <p>
-              In general, the variance‑minimizing baseline depends on both the prompt and the response through the score‑function norm, which is impractical to compute at scale. A standard and accurate simplification is to optimize a <em>value‑function baseline</em> \(b(x)\) by minimizing the mean‑squared error (MSE) of the centered return, ignoring the score‑norm factor. For a fixed prompt \(x\) with \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\),
+              A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). For a fixed prompt \(x\),
             </p>
             <p>
               \[
@@ -261,7 +261,7 @@
               \]
             </p>
             <p>
-              so variance reduction reduces to estimating the value function \(\mu(x)\) accurately. In the multi‑prompt setting, the target is the <em>batch</em> MSE over all prompts and rollouts:
+              so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. In the multi‑prompt setting, the target is the <em>batch</em> MSE over all prompts and rollouts:
             </p>
             <p>
               \[
@@ -278,7 +278,7 @@
             </p>
             <ul>
               <li><strong>Per‑prompt means (e.g., GRPO/RLOO):</strong> set \(b_i^j\) near the prompt’s empirical mean. This minimizes bias to \(\mu_i\) but can be <em>high variance</em> when \(m\) is small.</li>
-              <li><strong>Batch/global means (e.g., BLOO/REINFORCE++):</strong> average across prompts to reduce variance, but this introduces <em>bias</em> when prompts’ true values \(\mu_i\) differ.</li>
+              <li><strong>Batch/global means (e.g., REINFORCE++):</strong> average across prompts to reduce variance, but this introduces <em>bias</em> when prompts’ true values \(\mu_i\) differ.</li>
             </ul>
           
             <p>
