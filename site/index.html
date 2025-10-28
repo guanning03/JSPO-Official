@@ -395,52 +395,6 @@
               </figcaption>
             </figure>
 
-
-        <h2 class="title is-3" id="srt">Analysis</h2>
-        <div class="content has-text-justified">
-        <p>
-        We contribute with an <strong> information-theoretic </strong> justification for training on intermediate-difficulty prompts. 
-        Recall that prompts with 0% or 100% pass rates yield zero advantage and hence zero gradient.
-        What happens on prompts with pass rates close to these extremes?
-        </p>
-        <p>
-        Let \(J(\theta)\) be the objective function (on some prompt \(x\)). We usually compute some <em>stochastic gradient estimator</em> for \(J(\theta)\) to update the model's parameters.
-        We quantify the information value through the <strong>Signal-to-Noise Ratio (SNR)---defined as the ratio between the squared norm of the gradient estimator and its variance. </strong> 
-       </p>
-        <p>
-        A corollary of the standard analysis of stochastic gradient descent shows that the expected reward improvement can be lower-bounded by a function of the SNR. 
-        More specifically, let \(\theta\) be the model parameter and \(\theta^{+}\) be the updated model parameter. Then, given the stochastic gradient estimator is unbiased and \(J(\theta)\) is 1-smooth, the expected reward improvement can be lower-bounded by:
-        \[
-        \mathbb{E}\left[J(\theta^+)\right] - J(\theta) \geq
-        \frac{1}{2} \left\| \nabla_{\theta} J(\theta) \right\|^2 \left(1 - \frac{1}{\text{SNR}}\right).
-        \]
-        Therefore, if the SNR approaches zero, variance dominates and little improvement is expected from a single step.
-        </p>
-        <p>
-        In fact, we prove that <strong> the pass rate of a prompt is tightly correlated with its SNR.</strong>
-        In this paper, we show that the prompts with extreme pass rates (near 0% or 100%) have very low SNR and thus yield little improvement according to the above expression. 
-        </p>
-        <p>
-        <strong>Theorem (Fundamental Connection between SNR and Pass Rate, Informal)</strong>
-        Fix a prompt. Let \( p \) denote the (expected) pass rate (i.e., the probability that the question is correctly solved) of prompt under the current policy.
-        We generate \( N \) completions for the prompt independently.
-        The SNR of the stochastic gradient estimator (when \( N \geq 3 \) and \( p < 1/4 \) or \( p > 3/4 \)) satisfies the bound:
-        \[
-        \text{SNR} \leq 4N \cdot p (1 - p)
-        \]
-        Moreover, for fixed \( N \), we have:
-        \[
-        \lim_{p \to 1} \text{SNR} =
-        \lim_{p \to 0} \text{SNR} = 0
-        \]
-      </p>
-        This result is significant:
-    
-            It establises that increasing the number of samples \( N \) increases the SNR at a linear rate, as we'd expect, but in a way proportional to the pass rate \( p \) when this is close to zero (similar considerations apply when \( p \) is close to \( 100\% \)). 
-            When the pass rate is close to zero, we have the upper bound \( \text{SNR} < Np \), while the cost of inference is proportional to \( N \).
-            This suggests that the <strong>``utility / compute cost" </strong> ratio of a prompt is at most its pass rate \( p \), justifying the idea of saving compute on prompts with \(p \approx 0\% \). 
-            Similar considerations apply for prompts with pass rate around \( 100\% \). 
-
             <h2 class="title is-3" id="srt">Citation</h2>
             <p>If you find this work useful, please cite it as follows:</p>
 
