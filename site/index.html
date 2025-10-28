@@ -263,15 +263,7 @@
             <p>
               so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. In the multi‑prompt setting, the target is the <em>batch</em> MSE over all prompts and rollouts:
             </p>
-            <p>
-              \[
-              \mathrm{MSE}
-              \;:=\;
-              \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m}
-              \mathbb{E}\bigl[(b_i^j - \mu_i)^2\bigr],
-              \quad \mu_i := \mathbb{E}_{y\sim\pi_\theta(\cdot\mid x_i)}[r(x_i,y)]\,.
-              \]
-            </p>
+            <p> \[ \mathrm{MSE} \;:=\; \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\bigl[(b_i^j - \mu_i)^2\bigr], \quad \mu_i := \mathbb{E}_{y\sim\pi_\theta(\cdot\mid x_i)}[r(x_i,y)]\,. \] </p> <p> \[ \begin{aligned} \mathrm{MSE} &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mathbb{E}[b_i^j]+\mathbb{E}[b_i^j]-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\mathbb{E}\bigl[(b_i^j-\mathbb{E}[b_i^j])^2\bigr] + 2\,\mathbb{E}[b_i^j-\mathbb{E}[b_i^j]]\,(\mathbb{E}[b_i^j]-\mu_i) + (\mathbb{E}[b_i^j]-\mu_i)^2\Bigr) \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\mathbb{V}\mathrm{ar}[\,b_i^j\,] + (\mathbb{E}[b_i^j]-\mu_i)^2\Bigr). \end{aligned} \] </p>
           
             <p>
               This batch objective reveals a clear <strong>variance–bias trade‑off</strong> in baseline design:
