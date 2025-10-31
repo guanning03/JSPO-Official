@@ -69,7 +69,7 @@ bash run_knk.sh rloo            # baseline / comparison
 
 ## Acknowledgement
 
-The authors gratefully acknowledges <a href="https://tajwarfahim.github.io/">Fahim Tajwar</a>, <a href="https://sheikhshafayat.github.io/">Sheikh Shafayat</a> and all the other members in Zenatte's Lab for their helpful suggestions and valuable feedback.
+The authors gratefully acknowledges <a href="https://tajwarfahim.github.io/">Fahim Tajwar</a>, <a href="https://sheikhshafayat.github.io/">Sheikh Shafayat</a> and all the other members in Zanette's Lab for their helpful suggestions and valuable feedback.
 
 ## Bibtex 
 
