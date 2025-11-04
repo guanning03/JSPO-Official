@@ -184,7 +184,7 @@
 
             <!-- Teaser sentence -->
             <p class="is-size-4 has-text-centered" style="margin-top: 2rem; font-style: italic; color: #555; font-family: 'Cormorant Garamond', serif;">
-              "Careful interpolation between prompt and batch means for baselines in RLVR reduces the policy gradient variance."
+              <strong>"Careful interpolation between prompt and batch means for baselines in RLVR reduces the policy gradient variance."</strong>
             </p>
 
           </div> <!-- /.column -->
@@ -202,17 +202,16 @@
           <!-- Overview -->
           <div class="content has-text-justified">
             <p>
-              We introduce <strong>James–Stein Policy Optimization (JSPO)</strong>, a critic‑free, variance‑reduced reinforcement learning method for large reasoning models. Regarding that policy gradient is estimated within a batch of prompts, JSPO replaces the usual per‑prompt baseline (e.g., RLOO, GRPO) with an <em>adaptive James–Stein shrinkage baseline</em> that shares information across prompts to suppress variance in gradient estimation while preserving unbiased policy‑gradient updates.
+              We introduce <strong>James-Stein Shrinkage Baseline</strong>, a baseline for critic‑free, variance‑reduced reinforcement learning in large reasoning models. 
             </p>
             <ul>
               <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
-              <li><strong>Unbiased by construction.</strong> A two‑level leave‑one‑out design makes the baseline independent of the held‑out reward, so the policy‑gradient estimator remains unbiased.</li>
-              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, or DAPO, without introducing additional hyperparameters or computational overhead.</li>
-              <li><strong>Better sample efficiency & stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
+              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, DAPO, DR.GRPO, GSPO, CISPO, ..., without introducing any additional hyperparameters or computational overhead.</li>
+              <li><strong>Better training stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
               <img src="./static/images/teaser_figure.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> JSPO replaces noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and faster, steadier learning.</figcaption>
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can replace noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier learning.</figcaption>
             </figure>
           </div> <!-- /.content -->
           
