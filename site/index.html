@@ -358,7 +358,15 @@
           <h2 class="title is-3" id="algo">Shrinkage Baseline</h2>
           <div class="content has-text-justified">
             <p>
-              Based on the Stein's paradox in statistics, <strong>JSPO</strong> builds a lower-variance baseline by <em>shrinking</em> each prompt’s leave‑one‑out mean reward toward a leave-one-out (LOO) batch mean, with a data‑dependent coefficient. For prompt \(x_i\) (\(i=1,\dots,n\)) with \(m\) rollouts \(r_i^1,\dots,r_i^m\), define the LOO prompt mean and the LOO batch mean as
+              Based on the solution to the famous Stein's paradox in statistics, an adaptive interpolation between prompt mean and batch mean form a strictly better estimation during simultaneous estimation of multiple value functions.
+            </p>
+            <p>
+              \[
+              b_{ij}^{\text{JS}} \;=\; (1-\hat{\lambda}_i)\,\hat{\mu}_{i}^{-j} \;+\; \hat{\lambda}_i\,\hat{\mu}_{-i},
+              \]
+            </p>
+            <p>
+              where
             </p>
             <p>
               \[
@@ -370,13 +378,7 @@
               \]
             </p>
             <p>
-              The JSPO baseline for sample \((i,j)\) is the adaptive combination between the LOO prompt mean and the LOO batch mean:
-            </p>
-            <p>
-              \[
-              b_{ij}^{\text{JSPO}} \;=\; (1-\hat{\lambda}_i)\,\hat{\mu}_{i}^{-j} \;+\; \hat{\lambda}_i\,\hat{\mu}_{-i},
-              \]
-              where the shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. The optimal shrinkage coefficient is given by:
+              The shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. Through derivations, we have 
             </p>
             <p>
               \[
@@ -388,7 +390,7 @@
               with \(\sigma^2(x)=\mathrm{Var}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\) and \(\mu(x)=\mathbb{E}_{y\sim\pi_\theta(\cdot|x)}[r(x,y)]\).
             </p>
             <p>
-              In addition, we estimate the components from the current batch using plug‑in statistics:
+              In practice, we can estimate both components from the current batch using plug‑in statistics:
             </p>
             <p>
               \[
@@ -400,7 +402,7 @@
               \[
               \hat{\lambda}_i \;=\; \frac{n-1}{n}\cdot \frac{\hat{v}_{-i}}{\,\hat{v}_{-i}+\hat{s}_{-i}\,}.
               \]
-              Substituting into the baseline gives \(b_{ij}^{\text{JSPO}}\) above. 
+              Substituting into the baseline gives \(b_{ij}^{\text{JS}}\) above. 
             </p>
             <p>
               when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and our James-Stein baseline adaptively leaning towards the batch mean, similar to REINFORCE++; when \(s^2 \gg v^2\) (e.g. sufficient rollouts, heterogeneous training data), \(\hat{\lambda}_i \approx 0\) and the James-Stein baseline reduces to the prompt mean, similar to GRPO. Under arbitrary conditions, the James-Stein baseline is theoretically guaranteed to be a more accurate compared with other baselines.
