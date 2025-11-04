@@ -342,8 +342,8 @@
               This batch objective reveals a clear <strong>variance–bias trade‑off</strong> in baseline design:
             </p>
             <ul>
-              <li><strong>Per‑prompt means (e.g., GRPO/RLOO):</strong> set \(b_i^j\) near the prompt’s empirical mean, which is the usual choice for most RLVR algorithms. This minimizes bias to \(\mu_i\) but can be <em>high variance</em> when \(m\) is small.</li>
-              <li><strong>Batch/global means (e.g., REINFORCE++):</strong> is another possible choice. It average across prompts to reduce variance, but this introduces <em>bias</em> when prompts’ true values \(\mu_i\) differ.</li>
+              <li><strong>Prompt means (e.g., GRPO/RLOO):</strong> set \(b_i^j\) near the prompt’s empirical mean, which is the usual choice for most RLVR algorithms. This minimizes bias to \(\mu_i\) but can be <em>high variance</em> when \(m\) is small.</li>
+              <li><strong>Batch means (e.g., REINFORCE++):</strong> is another possible choice. It average across prompts to reduce variance, but this introduces <em>bias</em> when prompts’ true values \(\mu_i\) differ.</li>
             </ul>
           
             <p>
