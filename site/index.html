@@ -129,6 +129,70 @@
   <script src="./static/js/index.js"></script>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<!-- MathJax v3 (LaTeX rendering) -->
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<style>
+  /* 轻量 tooltip：把说明放到 data-note，悬停时浮出 */
+  .hover-note {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted #999;
+    display: inline-block;
+    line-height: 1;
+    padding: 0 0.2em;
+    color: #666;
+    font-size: 0.95em;
+  }
+  .hover-note::after {
+    content: attr(data-note);
+    position: absolute;
+    left: 0;
+    bottom: 125%;
+    transform: translateY(-4px);
+    background: #111;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    white-space: normal;
+    max-width: 420px;
+    font-size: 0.9em;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease, transform .15s ease;
+    z-index: 1000;
+  }
+  .hover-note::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    bottom: 125%;
+    transform: translateY(6px);
+    border: 6px solid transparent;
+    border-top-color: #111;
+    opacity: 0;
+    transition: opacity .15s ease;
+    z-index: 1001;
+  }
+  .hover-note:hover::after,
+  .hover-note:hover::before {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 可选：长公式块与提示图标的行内排版 */
+  .formula-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+</style>
+
 </head>
 
 <body>
@@ -198,15 +262,14 @@
     <div class="container is-max-widescreen">
       <div class="columns is-centered">
         <div class="column is-full-width">
-          
           <!-- Overview -->
           <div class="content has-text-justified">
             <p>
-              We introduce <strong>James-Stein Shrinkage Baseline</strong>, a baseline for critic‑free, variance‑reduced reinforcement learning in large reasoning models. 
+              We introduce <strong>James-Stein Shrinkage Baseline</strong>, a baseline for critic‑free, variance‑reduced reinforcement learning with verifiable rewards (RLVR) in large reasoning models. 
             </p>
             <ul>
               <li><strong>Lower‑variance updates.</strong> A closed‑form, data‑dependent shrinkage coefficient pools signal across the batch when per‑prompt estimates are noisy and backs off when prompts are heterogeneous.</li>
-              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, DAPO, DR.GRPO, GSPO, CISPO, ..., without introducing any additional hyperparameters or computational overhead.</li>
+              <li><strong>Drop‑in & compute‑light.</strong> Works out of the box with rule‑based RLVR algorithms such as GRPO, RLOO, REINFORCE++, DAPO, DR.GRPO, GSPO and CISPO, without introducing any additional hyperparameters or computational overhead.</li>
               <li><strong>Better training stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
@@ -214,31 +277,54 @@
               <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
             </figure>
           </div> <!-- /.content -->
-          
-          <h2 class="title is-3" id="srt">Introduction</h2>
+
+        <h2 class="title is-3" id="srt">Introduction</h2>
+        <div class="content has-text-justified">
+          <p>
+            We consider Reinforcement Learning with Verifiable Rewards (RLVR) in large reasoning models. Let the policy be
+            <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, reward \(r(x,y)\in\mathbb{R}\), where \(x\) is the prompt and \(y\) is the response. At each RL step, we sample \(n\) prompts \(x_1,\dots,x_n\) and, for each prompt \(x_i\), generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). The surrogate objective in the well-known GRPO algorithm can be written as
+          </p>
+
+          <p class="formula-wrap">
+            \[
+            \mathcal{J}_{\mathrm{GRPO}}(\theta)
+            \;:=\;
+            \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
+            \begin{aligned}[t]
+            \min\!\Bigg(
+            &\frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}{\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}\,(r_i^j - b_i^j),\\
+            &\operatorname{clip}\!\Bigg(
+            \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}{\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)},
+            \,1-\epsilon,\,1+\epsilon\Bigg)\,(r_i^j - b_i^j)
+            \Bigg)
+            \end{aligned}
+            \, .
+            \]
+          </p>
+
+          <p style="margin-top:-0.5rem">
+            Here, \(\,y_{i,1{:}t-1}\) denotes the prefix tokens from position \(1\) to \(t-1\), and \(\lvert y_i^{\,j}\rvert\) is the token length of \(y_i^{\,j}\), while \(\theta_{\mathrm{old}}\) is the behavior policy from the previous iteration. Note that in the formulation above, advantage normalization by standard deviation is omitted, since recent work observes similar scaling behavior without it.
+          </p>
+
+          <p>
+            We focus on \(b^j_i\), usually referred to the baseline in deep reinforcement learning. Subtracting the rewards \(r_i^j\) by the baseline reduces the variance of the policy-gradient estimate, which is very essential to stabilize training. For example, in GRPO, the baseline is the empirical prompt mean. Below is a leave-one-out estimation:
+          </p>
+
+          <p class="has-text-centered">
+            \(b_i^j = \frac{1}{m-1} \sum_{k=1}^{m} r_i^k, \; k\neq j\)
+          </p>
+
+          <!-- 结尾问题，按指定字体与样式 -->
+          <p class="is-size-5 has-text-centered" style="font-style: italic; color: #555; font-family: 'Source Serif 4', Georgia, serif;">
+            However, is the empirical prompt mean the theoretically optimal baseline for RLVR?
+          </p>
+        </div>
+
+          <h2 class="title is-3" id="srt">A Bias-Variance Tradeoff</h2>
           <div class="content has-text-justified">
-            <p>
-              We consider Reinforcement Learning with Verifiable Rewards (RLVR). Let the policy be <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, reward \(r(x,y)\in\mathbb{R}\), and the objective
-            </p>
-            <p>
-              \[
-              J(\theta) \;:=\; \mathbb{E}_{x\sim\mathcal{D},\,y\sim\pi_\theta(\cdot\mid x)}\,[\,r(x,y)\,] \, .
-              \]
-            </p>
-            <p>
-              At each RL step, we sample \(n\) prompts \(x_1,\dots,x_n\) and, for each prompt \(x_i\), generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). Using per‑sample baselines \(b_i^j\), the (critic‑free) batch policy‑gradient estimator is
-            </p>
-            <p>
-              \[
-              g(x,Y;\theta)
-              \;:=\;
-              \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}
-              \bigl(r_i^j - b_i^j\bigr)\,\nabla_\theta \log \pi_\theta(y_i^j \mid x_i)\,.
-              \]
-            </p>
-            <p>
+            <!-- <p>
               This estimator is <em>unbiased</em> whenever each baseline \(b_i^j\) is independent of its paired reward \(r_i^j\); leave‑one‑out constructions (e.g., RLOO‑style) enforce this independence in practice.
-            </p>
+            </p> -->
           
             <!-- <p>
               To measure estimator quality, we track the variance (trace of the covariance) of the vector‑valued gradient:
@@ -253,7 +339,7 @@
               \]
             </p> -->
           
-            <p>
+            <!-- <p>
               A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\) (e.g. In all actor-critic methods, the value function is estimated from a critic network which serves as the baseline). For a fixed prompt \(x\),
             </p>
             <p>
@@ -279,7 +365,7 @@
           
             <p>
               Because we must estimate <em>many</em> prompt values simultaneously, neither extreme is optimal in batch MSE. The James–Stein perspective suggests <em>shrinking</em> each prompt’s baseline toward the batch mean by a data‑dependent amount, balancing variance reduction and bias while preserving unbiased gradients via leave‑one‑out independence.
-            </p>
+            </p> -->
           </div>
           
           <!-- James–Stein Policy Optimization (JSPO): Algorithm Design -->
