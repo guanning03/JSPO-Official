@@ -321,25 +321,8 @@
         </div>
 
           <h2 class="title is-3" id="srt">A Bias-Variance Tradeoff</h2>
-          <div class="content has-text-justified">
-            <!-- <p>
-              This estimator is <em>unbiased</em> whenever each baseline \(b_i^j\) is independent of its paired reward \(r_i^j\); leave‑one‑out constructions (e.g., RLOO‑style) enforce this independence in practice.
-            </p> -->
-          
-            <!-- <p>
-              To measure estimator quality, we track the variance (trace of the covariance) of the vector‑valued gradient:
-            </p>
+          <div class="content has-text-justified">          
             <p>
-              \[
-              \mathrm{Var}[g]
-              \;:=\;
-              \operatorname{Tr}\,\mathrm{Var}\!\big[g(x,Y;\theta)\big]
-              \;=\;
-              \mathbb{E}\bigl[\;\|\,g(x,Y;\theta)-\nabla_\theta J(\theta)\,\|_2^2\bigr]\,.
-              \]
-            </p> -->
-          
-            <!-- <p>
               A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\) (e.g. In all actor-critic methods, the value function is estimated from a critic network which serves as the baseline). For a fixed prompt \(x\),
             </p>
             <p>
@@ -365,7 +348,7 @@
           
             <p>
               Because we must estimate <em>many</em> prompt values simultaneously, neither extreme is optimal in batch MSE. The James–Stein perspective suggests <em>shrinking</em> each prompt’s baseline toward the batch mean by a data‑dependent amount, balancing variance reduction and bias while preserving unbiased gradients via leave‑one‑out independence.
-            </p> -->
+            </p>
           </div>
           
           <!-- James–Stein Policy Optimization (JSPO): Algorithm Design -->
