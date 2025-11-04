@@ -18,7 +18,7 @@
   <!-- Custom fonts & responsive typography -->
   <style>
     /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap');
 
     /* Root defaults (desktop / large screens) */
     html {
@@ -183,8 +183,8 @@
             </div> <!-- /.publication-links -->
 
             <!-- Teaser sentence -->
-            <p class="is-size-4 has-text-centered" style="margin-top: 2rem; font-style: italic; color: #555; font-family: 'Cormorant Garamond', serif;">
-              <strong>"Careful interpolation between prompt and batch means for baselines in RLVR reduces the policy gradient variance."</strong>
+            <p class="is-size-4 has-text-centered" style="margin-top: 2rem; font-style: italic; color: #555; font-family: 'Source Serif 4', Georgia, serif;">
+              "Careful interpolation between prompt and batch means for baselines in RLVR reduces the policy gradient variance."
             </p>
 
           </div> <!-- /.column -->
@@ -210,8 +210,8 @@
               <li><strong>Better training stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
-              <img src="./static/images/teaser_figure.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can replace noisy per‑prompt baselines with a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
             </figure>
           </div> <!-- /.content -->
           
