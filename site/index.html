@@ -280,28 +280,66 @@
 
         <h2 class="title is-3" id="srt">Introduction</h2>
         <div class="content has-text-justified">
+          
+          <h3 class="title is-4" style="margin-top: 1.5rem; margin-bottom: 1rem;">Problem Setting</h3>
           <p>
-            We consider Reinforcement Learning with Verifiable Rewards (RLVR) in large reasoning models. Let the policy be
-            <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, reward \(r(x,y)\in\mathbb{R}\), where \(x\) is the prompt and \(y\) is the response. At each RL step, we sample \(n\) prompts \(x_1,\dots,x_n\) and, for each prompt \(x_i\), generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) with rewards \(r_i^j := r(x_i,y_i^j)\). The surrogate objective in the well-known GRPO algorithm can be written as
+            We consider Reinforcement Learning with Verifiable Rewards (RLVR) in large reasoning models. In this setting, we aim to optimize a language model policy <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, where \(x\) is a prompt (e.g., a math problem) and \(y\) is the model's response (e.g., a reasoning chain and answer). The quality of each response is measured by a verifiable reward function \(r(x,y)\in\mathbb{R}\), which can be computed using, for instance, automatic graders that check correctness.
+          </p>
+          
+          <p>
+            At each reinforcement learning iteration, we follow a standard sampling procedure: we first sample a batch of \(n\) prompts \(x_1,\dots,x_n\) from the training distribution. Then, for each prompt \(x_i\), we generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) by sampling from the current policy. Each response \(y_i^j\) receives a corresponding reward \(r_i^j := r(x_i,y_i^j)\). This produces a total of \(n \times m\) prompt-response pairs with associated rewards per iteration.
+          </p>
+
+          <h3 class="title is-4" style="margin-top: 1.5rem; margin-bottom: 1rem;">GRPO Objective</h3>
+          <p>
+            The surrogate objective in the well-known Group Relative Policy Optimization (GRPO) algorithm can be written as:
           </p>
 
           <p class="formula-wrap">
             \[
-            \begin{aligned}
             \mathcal{J}_{\mathrm{GRPO}}(\theta)
-            &:= \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
+            := \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
             \min\!\Big(\,\rho_{i,t}^{\,j}\,A_i^{\,j},\;
-            \operatorname{clip}\!\big(\rho_{i,t}^{\,j},\,1-\epsilon,\,1+\epsilon\big)\,A_i^{\,j}\Big) \\[4pt]
+            \operatorname{clip}\!\big(\rho_{i,t}^{\,j},\,1-\epsilon,\,1+\epsilon\big)\,A_i^{\,j}\Big) \, ,
+            \]
+          </p>
+          
+          <p>
+            where \(\lvert y_i^{\,j}\rvert\) denotes the token length of response \(y_i^{\,j}\), and the objective aggregates contributions across all prompts, responses, and tokens.
+          </p>
+
+          <p>
+            Here, \(\rho_{i,t}^{\,j}\) is the <strong>importance sampling ratio</strong> at token position \(t\):
+          </p>
+
+          <p class="formula-wrap">
+            \[
             \rho_{i,t}^{\,j}
-            &:= \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}
-            {\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)} \\[4pt]
-            A_i^{\,j} &:= r_i^{\,j} - b_i^{\,j}\, .
-            \end{aligned}
+            := \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}
+            {\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)} \, ,
             \]
           </p>
 
-          <p style="margin-top:-0.5rem">
-            Here, \(\,y_{i,1{:}t-1}\) denotes the prefix tokens from position \(1\) to \(t-1\), and \(\lvert y_i^{\,j}\rvert\) is the token length of \(y_i^{\,j}\), while \(\theta_{\mathrm{old}}\) is the behavior policy from the previous iteration. Note that in the formulation above, advantage normalization by standard deviation is omitted, since recent work observes similar scaling behavior without it.
+          <p>
+            which measures the ratio between the current policy \(\pi_\theta\) and the old policy \(\pi_{\theta_{\mathrm{old}}}\) (the behavior policy from the previous iteration) for generating token \(y_{i,t}^{\,j}\) given the prompt \(x_i\) and the preceding tokens \(y_{i,1{:}t-1}^{\,j}\). 
+          </p>
+
+          <p>
+            Meanwhile, \(A_i^{\,j}\) is the <strong>advantage</strong>, defined as:
+          </p>
+
+          <p class="formula-wrap">
+            \[
+            A_i^{\,j} := r_i^{\,j} - b_i^{\,j}\, ,
+            \]
+          </p>
+
+          <p>
+            where \(r_i^{\,j}\) is the observed reward for response \(y_i^{\,j}\), and \(b_i^{\,j}\) is the <strong>baseline</strong>. The advantage captures how much better (or worse) a particular response is compared to the baseline. By subtracting the baseline from the raw reward, we center the signal and reduce the variance of gradient estimates, which is crucial for stable and efficient learning.
+          </p>
+
+          <p>
+            Note that in standard GRPO implementations, the advantage \(A_i^{\,j}\) is often further normalized by dividing by the empirical standard deviation across all advantages in the batch. However, we omit this normalization step in our formulation, as recent empirical work has demonstrated that both the normalized and unnormalized versions exhibit similar scaling behavior in terms of final performance and training dynamics.
           </p>
 
           <p>
