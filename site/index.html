@@ -281,7 +281,6 @@
         <h2 class="title is-3" id="srt">Introduction</h2>
         <div class="content has-text-justified">
           
-          <h3 class="title is-4" style="margin-top: 1.5rem; margin-bottom: 1rem;">Problem Setting</h3>
           <p>
             We consider Reinforcement Learning with Verifiable Rewards (RLVR) in large reasoning models. In this setting, we aim to optimize a language model policy <span style="white-space:nowrap;">\(\pi_\theta(y \mid x)\)</span>, where \(x\) is a prompt (e.g., a math problem) and \(y\) is the model's response (e.g., a reasoning chain and answer). The quality of each response is measured by a verifiable reward function \(r(x,y)\in\mathbb{R}\), which can be computed using, for instance, automatic graders that check correctness.
           </p>
@@ -290,7 +289,6 @@
             At each reinforcement learning iteration, we follow a standard sampling procedure: we first sample a batch of \(n\) prompts \(x_1,\dots,x_n\) from the training distribution. Then, for each prompt \(x_i\), we generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) by sampling from the current policy. Each response \(y_i^j\) receives a corresponding reward \(r_i^j := r(x_i,y_i^j)\). This produces a total of \(n \times m\) prompt-response pairs with associated rewards per iteration.
           </p>
 
-          <h3 class="title is-4" style="margin-top: 1.5rem; margin-bottom: 1rem;">GRPO Objective</h3>
           <p>
             The surrogate objective in the well-known Group Relative Policy Optimization (GRPO) algorithm can be written as:
           </p>
