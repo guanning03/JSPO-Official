@@ -287,18 +287,16 @@
 
           <p class="formula-wrap">
             \[
+            \begin{aligned}
             \mathcal{J}_{\mathrm{GRPO}}(\theta)
-            \;:=\;
-            \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
-            \begin{aligned}[t]
-            \min\!\Bigg(
-            &\frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}{\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}\,(r_i^j - b_i^j),\\
-            &\operatorname{clip}\!\Bigg(
-            \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}{\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)},
-            \,1-\epsilon,\,1+\epsilon\Bigg)\,(r_i^j - b_i^j)
-            \Bigg)
+            &:= \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
+            \min\!\Big(\,\rho_{i,t}^{\,j}\,A_i^{\,j},\;
+            \operatorname{clip}\!\big(\rho_{i,t}^{\,j},\,1-\epsilon,\,1+\epsilon\big)\,A_i^{\,j}\Big) \\[4pt]
+            \rho_{i,t}^{\,j}
+            &:= \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}
+            {\pi_{\theta_{\mathrm{old}}}\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)} \\[4pt]
+            A_i^{\,j} &:= r_i^{\,j} - b_i^{\,j}\, .
             \end{aligned}
-            \, .
             \]
           </p>
 
