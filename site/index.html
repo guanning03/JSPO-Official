@@ -286,7 +286,7 @@
           </p>
           
           <p>
-            At each reinforcement learning iteration, we follow a standard sampling procedure: we first sample a batch of \(n\) prompts \(x_1,\dots,x_n\) from the training distribution. Then, for each prompt \(x_i\), we generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) by sampling from the current policy. Each response \(y_i^j\) receives a corresponding reward \(r_i^j := r(x_i,y_i^j)\). This produces a total of \(n \times m\) prompt-response pairs with associated rewards per iteration. The surrogate objective in the well-known Group Relative Policy Optimization (GRPO) algorithm&nbsp;<a href="https://arxiv.org/pdf/2402.03300" target="_blank">[Papangelis et al., 2024]</a> can be written as:
+            At each reinforcement learning iteration, we follow a standard sampling procedure: we first sample a batch of \(n\) prompts \(x_1,\dots,x_n\) from the training distribution. Then, for each prompt \(x_i\), we generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) by sampling from the current policy. Each response \(y_i^j\) receives a corresponding reward \(r_i^j := r(x_i,y_i^j)\). This produces a total of \(n \times m\) prompt-response pairs with associated rewards per iteration. The surrogate objective in the well-known <a href="https://arxiv.org/pdf/2402.03300" target="_blank"><u>Group Relative Policy Optimization (GRPO) algorithm</u></a> can be written as:
           </p>
 
           <p style="text-align: center;">
@@ -322,11 +322,11 @@
 
           <p>
             where \(r_i^{\,j}\) is the observed reward for response \(y_i^{\,j}\), and \(b_i^{\,j}\) is the <strong>baseline</strong>. 
-            Note that in standard GRPO implementations, the advantage \(A_i^{\,j}\) is often further normalized by dividing by the empirical standard deviation across all advantages in the batch. However, we omit this normalization step in our formulation, as <a href="https://arxiv.org/abs/2510.13786" target="_blank">recent empirical work</a> has demonstrated that both the normalized and unnormalized versions exhibit similar scaling behavior in terms of final performance and training dynamics.
+            Note that in standard GRPO implementations, the advantage \(A_i^{\,j}\) is often further normalized by dividing by the empirical standard deviation across all advantages in the batch. We ignore this normalization step during analysis, as <a href="https://arxiv.org/pdf/2510.13786" target="_blank"><u>recent empirical work</u></a> has demonstrated that both the normalized and unnormalized versions exhibit similar scaling behavior in terms of final performance and training dynamics.
           </p>
 
           <p>
-            We focus on baseline \(b^j_i\), a commonly used control variate in deep reinforcement learning. Subtracting the rewards \(r_i^j\) by the baseline reduces the variance of the policy-gradient estimate, which is very essential to stabilize training. For example, in GRPO, the baseline is the empirical prompt mean. Below is a leave-one-out estimation:
+            We focus on <a href="http://incompleteideas.net/book/the-book-2nd.html" target="_blank"><u>baseline</u></a> \(b^j_i\), a commonly used control variate in deep reinforcement learning. Subtracting the rewards \(r_i^j\) by the baseline reduces the variance of the policy-gradient estimate, which is very essential to stabilize training. For example, in GRPO, the baseline is the empirical prompt mean. Below is a leave-one-out estimation:
           </p>
 
           <p class="has-text-centered">
