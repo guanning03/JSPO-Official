@@ -289,7 +289,7 @@
             At each reinforcement learning iteration, we follow a standard sampling procedure: we first sample a batch of \(n\) prompts \(x_1,\dots,x_n\) from the training distribution. Then, for each prompt \(x_i\), we generate \(m\) independent responses \(y_i^1,\dots,y_i^m\) by sampling from the current policy. Each response \(y_i^j\) receives a corresponding reward \(r_i^j := r(x_i,y_i^j)\). This produces a total of \(n \times m\) prompt-response pairs with associated rewards per iteration. The surrogate objective in the well-known Group Relative Policy Optimization (GRPO) algorithm can be written as:
           </p>
 
-          <p class="formula-wrap">
+          <p style="text-align: center;">
             \[
             \mathcal{J}_{\mathrm{GRPO}}(\theta)
             := \frac{1}{n}\sum_{i=1}^{n}\frac{1}{m}\sum_{j=1}^{m}\frac{1}{\lvert y_i^{\,j}\rvert}\sum_{t=1}^{\lvert y_i^{\,j}\rvert}
@@ -302,7 +302,7 @@
             where \(\lvert y_i^{\,j}\rvert\) denotes the token length of response \(y_i^{\,j}\), and the objective aggregates contributions across all prompts, responses, and tokens. Here, \(\rho_{i,t}^{\,j}\) is the importance sampling ratio at token position \(t\):
           </p>
 
-          <p class="formula-wrap">
+          <p style="text-align: center;">
             \[
             \rho_{i,t}^{\,j}
             := \frac{\pi_\theta\!\big(y_{i,t}^{\,j}\mid x_i,\,y_{i,1{:}t-1}^{\,j}\big)}
@@ -314,7 +314,7 @@
             which measures the ratio between the current policy \(\pi_\theta\) and the old policy \(\pi_{\theta_{\mathrm{old}}}\) for generating token \(y_{i,t}^{\,j}\). Meanwhile, \(A_i^{\,j}\) is the <strong>advantage</strong>, defined as:
           </p>
 
-          <p class="formula-wrap">
+          <p style="text-align: center;">
             \[
             A_i^{\,j} := r_i^{\,j} - b_i^{\,j}\, ,
             \]
@@ -334,7 +334,7 @@
           </p>
 
           <!-- 结尾问题，按指定字体与样式 -->
-          <p class="is-size-5 has-text-centered" style="font-style: italic; color: #555; font-family: 'Source Serif 4', Georgia, serif;">
+          <p>
             However, is the empirical prompt mean the theoretically optimal baseline for RLVR?
           </p>
         </div>
