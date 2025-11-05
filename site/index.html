@@ -316,7 +316,7 @@
 
           <p style="text-align: center;">
             \[
-            A_i^{\,j} := r_i^{\,j} - b_i^{\,j}\, ,
+            A_i^{\,j} := r_i^{\,j}{\color{red} - b_i^{\,j}}\, ,
             \]
           </p>
 
@@ -433,20 +433,20 @@
           <h2 class="title is-3" id="experiments">Experiments</h2>
           <div class="content has-text-justified">
             <p>
-              We demonstrate SPEED's efficacy by comparing the <strong>wall-clock time</strong> to achieve certain target performance for baseline RL algorithms and for SPEED variants.
-            </p>
-            <ul>
-              <li>Baseline: <a href="https://arxiv.org/abs/2402.14740" target="_blank" rel="noopener noreferrer">RLOO</a> and <a href="https://arxiv.org/abs/2503.14476" target="_blank" rel="noopener noreferrer">DAPO</a>. We compare RLOO vs SPEED-RLOO, and DAPO vs SPEED-DAPO.</li>
-              <li>Training Dataset: <a href="https://huggingface.co/datasets/agentica-org/DeepScaleR-Preview-Dataset" target="_blank" rel="noopener noreferrer">DeepScaleR</a>, <a href="https://huggingface.co/datasets/AI-MO/NuminaMath-TIR" target="_blank" rel="noopener noreferrer">NuminaMath</a>, and <a href="https://huggingface.co/datasets/BytedTsinghua-SIA/DAPO-Math-17k" target="_blank" rel="noopener noreferrer">DAPO-17k</a> (1k held-out set excluded)</li>
-              <li>Benchmarks: 1k held-out set from DAPO-17k, MATH500, AMC23, AIME2024, and AIME 2025. See <a href="https://huggingface.co/collections/rqzhang/speed-rl-684a72dfb24ea72540c32fa1" target="_blank" rel="noopener noreferrer">here</a>.</li>
-            </ul>
-            <p>
-              Empirically, SPEED variants substantially accelerate the training compared to the baseline methods by <strong>2x - 6x times</strong>. For detailed empirical results, please refer to our full paper.
+              We evaluate the performance of the James-Stein baseline on different tasks (Math Problems, Knights-and-Knaves, Maze, Countdown) and models (Qwen3-4B-Base, Qwen2.5-1.5B-Instruct, Qwen2.5-7B-Instruct, Ministral-8B-Instruct). We compare the performance of the James-Stein baseline with the empirical prompt mean without shrinkage. The JS baseline achieves lower variance and better performance than the empirical prompt mean. For detailed empirical results, please refer to our full paper.
             </p>
             <figure>
-              <img src="./static/images/main_figure.png" alt="Main experimental figure" class="teaser-image">
-              <figcaption><strong>Figure 3:</strong> Validation accuracy on various mathematical reasoning benchmarks for SPEED variants of RL algorithms and base RL algorithms. Top: RLOO versus SPEED-RLOO; bottom: DAPO versus SPEED-DAPO. The initial model used is Qwen2.5-Math-7B, trained on the DeepScaleR dataset.</figcaption>
-            </figure>
+              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+            </figure>            
+            <figure>
+              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+            </figure>    
+            <figure>
+              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+            </figure>    
           </div> <!-- /.content -->
 
 
