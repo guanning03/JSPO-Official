@@ -342,9 +342,10 @@
           <h2 class="title is-3" id="srt">A Bias-Variance Tradeoff</h2>
           <div class="content has-text-justified">          
             <p>
-              A standard and accurate simplification for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\) (e.g. In all actor-critic methods, the value function is estimated from a critic network which serves as the baseline). For a fixed prompt \(x\),
+              The baseline is a essential component in RLVR to stablize training, as experimental results show substantial performance degradation without it. A golden standard for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). (For example, in all actor-critic methods, the value function is estimated from a critic network which serves as the baseline. )
             </p>
             <p>
+              For a fixed prompt \(x\),
               \[
               \mathbb{E}_{y}\!\big[(r(x,y)-b(x))^2\big]
               \;=\;
@@ -353,10 +354,18 @@
               \]
             </p>
             <p>
-              so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. In the multi‑prompt setting, the target is the <em>batch</em> MSE over all prompts and rollouts:
+              so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. Therefore, for different kinds of baselines, we would like to see how close the estimation is compared with the value function. Specifically, consider two different ways, empirical prompt mean (which is most commonly used in RLVR such as GRPO) and empirical batch mean (some algorithms, such as REINFORCE++ adopts this)
+            </p>
+            <p>
+              [Formulation of prompt mean] [Formulation of batch mean]
+            </p>
+            <p>
+              We computed the mean squared error (MSE) between these baselines and the value function (which could be estimated by rollout for many times) during RLVR training and in different number of rollouts \(n\). As shown in the figure below, the MSE of prompt mean is lower in most cases, while batch mean is better when the number of rollouts is small or in early training stages. So how can we create a baseline estimator which enjoys lowest MSE with the ground truth value function in all scenarios?
+            </p>
+            <p>
+              To answer this question, we first write down the target: in the multi‑prompt setting, it is the <em>batch</em> MSE over all prompts and rollouts:
             </p>
             <p> \[ \begin{aligned} \mathrm{MSE} &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mathbb{E}[b_i^j]+\mathbb{E}[b_i^j]-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\mathbb{E}\bigl[(b_i^j-\mathbb{E}[b_i^j])^2\bigr] + 2\,\mathbb{E}[b_i^j-\mathbb{E}[b_i^j]]\,(\mathbb{E}[b_i^j]-\mu_i) + (\mathbb{E}[b_i^j]-\mu_i)^2\Bigr) \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\underbrace{\mathbb{V}\mathrm{ar}[\,b_i^j\,]}_{\text{Variance}} + \underbrace{(\mathbb{E}[b_i^j]-\mu_i)^2}_{\text{Bias}^2}\Bigr). \end{aligned} \] </p>
-          
             <p>
               This batch objective reveals a clear <strong>variance–bias trade‑off</strong> in baseline design:
             </p>
@@ -366,11 +375,8 @@
             </ul>
           
             <p>
-              Because we must estimate <em>many</em> prompt values simultaneously, neither extreme is optimal in terms of MSE from the whole batch level. 
-            </p>
-            <p class="is-size-5 has-text-centered" style="font-style: italic; color: #555; font-family: 'Source Serif 4', Georgia, serif;">
-              How can we create a baseline estimator which enjoys lowest MSE with the ground truth value function? 
-            </p>            
+              Because we must estimate <em>many</em> prompt values simultaneously, neither extreme is optimal. 
+            </p>              
           </div>
           
           <!-- James–Stein Policy Optimization (JSPO): Algorithm Design -->
@@ -385,7 +391,7 @@
               \]
             </p>
             <p>
-              where
+              the \(\hat{\mu}_{i}^{-j}\) and \(\hat{\mu}_{-i}\) are the empirical prompt mean and batch mean, respectively, and the \(\hat{\lambda}_i\) is called the shrinkage coefficient. 
             </p>
             <p>
               \[
@@ -397,7 +403,7 @@
               \]
             </p>
             <p>
-              The shrinkage coefficient \(\hat{\lambda}_i\) is chosen to minimize the batch MSE of value estimates. Through derivations, we have 
+              Through derivations, we have the optimal shrinkage coefficient as below:
             </p>
             <p>
               \[
@@ -494,9 +500,6 @@
                 year={2025}
               }
               </pre>
-              
-
-
   <br><br>
 <footer class="footer">
   <div class="container">
