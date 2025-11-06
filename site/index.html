@@ -351,7 +351,7 @@
           <h2 class="title is-3" id="srt">A Bias-Variance Tradeoff</h2>
           <div class="content has-text-justified">          
             <p>
-              The baseline is an essential component in RLVR to stablize training, as <a href="https://wandb.ai/zgn21/precision-rl" target="_blank"><u>experimental results</u></a> show substantial performance degradation without it. A golden standard for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). (For example, in all actor-critic methods, the value function is estimated from a critic network which serves as the baseline.)
+              The baseline is an essential component in RLVR to stablize training, as <a href="https://wandb.ai/zgn21/precision-rl" target="_blank"><u>experimental results</u></a> show substantial performance degradation without it. A golden standard for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). (For example, in all actor-critic methods, the value function is estimated from a critic network which serves as the baseline. See <a href="https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf" target="_blank"><u>Sutton's RL book</u></a> for more details.)
             </p>
             <p>
               For a fixed prompt \(x\),
