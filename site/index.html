@@ -273,8 +273,8 @@
               <li><strong>Better training stability.</strong> Outperforming existing baselines under different tasks, models and rollout budgets.</li>
             </ul>
             <figure>
-              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+              <img src="./static/images/teaser_01.png" alt="Overview of James-Stein Shrinkage Baseline" class="teaser-image">
+              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James-Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
             </figure>
           </div> <!-- /.content -->
 
@@ -430,44 +430,23 @@
 
 
           <!-- Experiments -->
-          <h2 class="title is-3" id="experiments">Experiments</h2>
+          <h2 class="title is-3" id="experiments">Experiments and Analysis</h2>
           <div class="content has-text-justified">
             <p>
-              We evaluate the performance of the James-Stein baseline on different tasks (Math Problems, Knights-and-Knaves, Maze, Countdown) and models (Qwen3-4B-Base, Qwen2.5-1.5B-Instruct, Qwen2.5-7B-Instruct, Ministral-8B-Instruct). We compare the performance of the James-Stein baseline with the empirical prompt mean without shrinkage. The JS baseline achieves lower variance and better performance than the empirical prompt mean. For detailed empirical results, please refer to our full paper.
+              We evaluate the performance of the James-Stein baseline on different tasks (Math Problems, Knights-and-Knaves, Maze, Countdown) and models (Qwen3-4B-Base, Qwen2.5-1.5B-Instruct, Qwen2.5-7B-Instruct, Ministral-8B-Instruct). We compare the performance of the James-Stein baseline with the empirical prompt mean without shrinkage. The JS baseline achieves lower variance and better performance than the empirical prompt mean, with up to 4.3% in math reasoning and up to 15.1% on logic puzzle reasoning. For detailed empirical results, please refer to our full paper.
             </p>
             <figure>
-              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+              <img src="./static/images/qwen3-4b_01.png" alt="Math Reasoning Performance" class="teaser-image">
+              <figcaption><strong>Figure 2:</strong> Math Reasoning Performance. Qwen3-4B-Base trained on DAPO17k dataset. </figcaption>
             </figure>            
             <figure>
-              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
+              <img src="./static/images/knk_plots_01.png" alt="Logic Puzzle (Knights-and-Knaves) Reasoning Performance" class="teaser-image">
+              <figcaption><strong>Figure 3:</strong> Logic Puzzle (Knights-and-Knaves) Reasoning Performance. Qwen3-4B-Base trained on Knight-Knave dataset with mixed difficulty levels. </figcaption>
             </figure>    
-            <figure>
-              <img src="./static/images/teaser_01.png" alt="Overview of JSPO" class="teaser-image">
-              <figcaption><strong>Figure 1:</strong> In critic-free RLVR, we can refine the common choice of using noisy prompt-mean baselines by using a James–Stein shrinkage baseline. The shrinkage adapts to within‑prompt noise and across‑prompt heterogeneity, yielding lower‑variance yet unbiased gradients and better, steadier training.</figcaption>
-            </figure>    
-          </div> <!-- /.content -->
 
-
-          <h2 class="title is-3" id="analysis">Analysis</h2>
-          <div class="content has-text-justified">
             <p>
-              We focus on providing insights into two key training dynamics that reveal the advantage of JSPO: namely, the <strong>adaptive shrinkage</strong> of the James–Stein coefficient and the <strong>reduced variance</strong> of the policy
-              gradient.
+              We observe two key training dynamics that reveal the advantage of JS baseline: namely, the <strong>adaptive shrinkage</strong> of the James–Stein coefficient and the <strong>reduced variance</strong> of the policy gradient.
             </p>
-            <p>
-              <strong>Adaptive Shrinkage.</strong> The shrinkage coefficient \(\lambda_i\) adapts to number of rollouts, heterogeneity of prompts, and the training progress.
-            </p>
-            <figure>
-              <img src="./static/images/adaptive_shrinkage.png" alt="Adaptive shrinkage coefficient over training and rollout counts" class="teaser-image" style="width: 50%;">
-              <figcaption>
-                <strong>Figure 2:</strong> Moving‑average shrinkage coefficient \(\lambda\) during training with 2/4/8 rollouts.
-                \(\lambda\) decreases with more rollouts and decays over time as the policy’s within‑prompt variance shrinks,
-                illustrating JSPO’s data‑driven adaptation. 
-              </figcaption>
-            </figure>
-
             <p>
               <strong>Variance Reduction.</strong> JSPO’s goal is to lower the variance of the vector‑valued policy‑gradient
               estimator \(g(x,Y;\theta)\). During training, we track the (unbiased) scalar summary \(\mathrm{Var}[g]\) via micro‑batch
@@ -480,8 +459,7 @@
                 \;=\;\frac{1}{m}\cdot\frac{1}{m-1}\!\left(\sum_{i=1}^{m}\|g_i\|_2^2 - m\,\|\bar g\|_2^2\right),
                 \quad \bar g=\frac{1}{m}\sum_{i=1}^{m} g_i.
               \]
-              Empirically, JSPO reduces the running average of gradient variance relative to RLOO by
-              <strong>11.2%</strong>, <strong>17.4%</strong>, <strong>31.6%</strong>, and <strong>67.1%</strong> across different models and setups. 
+              Empirically, JS baseline reduces the running average of gradient variance relative to prompt mean baseline by up to 67.1% across different models and setups. 
             </p>
 
             <figure>
