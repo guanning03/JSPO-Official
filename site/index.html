@@ -342,7 +342,7 @@
           <h2 class="title is-3" id="srt">A Bias-Variance Tradeoff</h2>
           <div class="content has-text-justified">          
             <p>
-              The baseline is a essential component in RLVR to stablize training, as experimental results show substantial performance degradation without it. A golden standard for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). (For example, in all actor-critic methods, the value function is estimated from a critic network which serves as the baseline. )
+              The baseline is an essential component in RLVR to stablize training, as <a href="https://wandb.ai/zgn21/precision-rl" target="_blank"><u>experimental results</u></a> show substantial performance degradation without it. A golden standard for baseline estimation \(b(x)\) is to make it close to the <em>value‑function</em> \(\mu(x):=\mathbb{E}_{y\sim\pi_\theta}[r(x,y)]\). (For example, in all actor-critic methods, the value function is estimated from a critic network which serves as the baseline.)
             </p>
             <p>
               For a fixed prompt \(x\),
@@ -354,7 +354,7 @@
               \]
             </p>
             <p>
-              so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. Therefore, for different kinds of baselines, we would like to see how close the estimation is compared with the value function. Specifically, consider two different ways, empirical prompt mean (which is most commonly used in RLVR such as GRPO) and empirical batch mean (some algorithms, such as REINFORCE++ adopts this)
+              so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. Specifically, consider two different ways: empirical prompt mean (which is most commonly used in RLVR such as GRPO), and empirical batch mean (adopted by some algorithms, such as <a href="https://arxiv.org/abs/2501.03262" target="_blank"><u>REINFORCE++</u></a>)
             </p>
             <p style="text-align: center;">
               <strong>Prompt Mean:</strong> 
@@ -364,10 +364,14 @@
               \(\displaystyle b_i^j = \hat{\mu} = \frac{1}{nm} \sum_{i=1}^{n} \sum_{j=1}^{m} r_i^j\)
             </p>
             <p>
-              We computed the mean squared error (MSE) between these baselines and the value function (which could be estimated by rollout for many times) during RLVR training and in different number of rollouts \(n\). As shown in the figure below, the MSE of prompt mean is lower in most cases, while batch mean is better when the number of rollouts is small or in early training stages. So how can we create a baseline estimator which enjoys lowest MSE with the ground truth value function in all scenarios?
+              For different baselines, we would like to see how close the estimation is compared with the value function. We computed the mean squared error (MSE) between these baselines and the value function (which could be estimated by rollout for many times) during RLVR training and in different number of rollouts \(n\). As shown in the figure below, the MSE of prompt mean is lower in most cases, while batch mean is better when the number of rollouts is small or in early training stages. 
             </p>
+            <figure>
+              <img src="./static/images/mse_estimation4_fig1.png" alt="MSE Comparison" class="teaser-image", style="width: 70%;">
+              <figcaption><strong>Figure 2:</strong> MSE Comparison between prompt mean and batch mean during RLVR training and in different number of rollouts \(n\). </figcaption>
+            </figure>                 
             <p>
-              To answer this question, we first write down the target: in the multi‑prompt setting, it is the <em>batch</em> MSE over all prompts and rollouts:
+              What is the reason behind this? Can we create a baseline estimator which enjoys lowest MSE with the ground truth value function in all scenarios? To answer these questions, we first write down the target: in the multi‑prompt setting, it is the <em>batch</em> MSE over all prompts and rollouts:
             </p>
             <p> \[ \begin{aligned} \mathrm{MSE} &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \mathbb{E}\!\left[\bigl(b_i^j-\mathbb{E}[b_i^j]+\mathbb{E}[b_i^j]-\mu_i\bigr)^2\right] \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\mathbb{E}\bigl[(b_i^j-\mathbb{E}[b_i^j])^2\bigr] + 2\,\mathbb{E}[b_i^j-\mathbb{E}[b_i^j]]\,(\mathbb{E}[b_i^j]-\mu_i) + (\mathbb{E}[b_i^j]-\mu_i)^2\Bigr) \\[2pt] &= \frac{1}{mn}\sum_{i=1}^{n}\sum_{j=1}^{m} \Bigl(\underbrace{\mathbb{V}\mathrm{ar}[\,b_i^j\,]}_{\text{Variance}} + \underbrace{(\mathbb{E}[b_i^j]-\mu_i)^2}_{\text{Bias}^2}\Bigr). \end{aligned} \] </p>
             <p>
@@ -387,7 +391,7 @@
           <h2 class="title is-3" id="algo">Shrinkage Baseline</h2>
           <div class="content has-text-justified">
             <p>
-              Based on the solution to the famous Stein's paradox in statistics, an adaptive interpolation between prompt mean and batch mean form a strictly better estimation during simultaneous estimation of multiple value functions.
+              In high-dimensional statistics, there is a famous concept known as <a href="https://en.wikipedia.org/wiki/Stein%27s_example" target="_blank"><u>Stein's paradox</u></a>, which shows that when we are simultaneously estimating multiple random variables, shrinking the estimates towards a global estimator leads to strictly better performance. Motivated by this, we can construct a new baseline by interpolating between the batch mean and the prompt mean, which we call the <strong>James-Stein Shrinkage Baseline</strong>:
             </p>
             <p>
               \[
@@ -434,8 +438,12 @@
               Substituting into the baseline gives \(b_{ij}^{\text{JS}}\) above. 
             </p>
             <p>
-              when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and our James-Stein baseline adaptively leaning towards the batch mean, similar to REINFORCE++; when \(s^2 \gg v^2\) (e.g. sufficient rollouts, heterogeneous training data), \(\hat{\lambda}_i \approx 0\) and the James-Stein baseline reduces to the prompt mean, similar to GRPO. Under arbitrary conditions, the James-Stein baseline is theoretically guaranteed to be a more accurate compared with other baselines.
+              when \(v^2 \gg s^2\) (e.g. few rollouts, high within‑prompt noise), \(\hat{\lambda}_i\) is large and our James-Stein baseline adaptively leaning towards the batch mean, similar to REINFORCE++; when \(s^2 \gg v^2\) (e.g. sufficient rollouts, heterogeneous training data), \(\hat{\lambda}_i \approx 0\) and the James-Stein baseline reduces to the prompt mean, similar to GRPO. Under arbitrary conditions, the James-Stein baseline is theoretically guaranteed to be a more accurate estimation for value function, compared with other baselines such as prompt mean, as shown in the figure below.
             </p>
+            <figure>
+              <img src="./static/images/mse_estimation4_fig2.png" alt="MSE Comparison" class="teaser-image", style="width: 70%;">
+              <figcaption><strong>Figure 3:</strong> MSE Comparison between James-Stein baseline and prompt mean during RLVR training and in different number of rollouts \(n\). </figcaption>
+            </figure>
           </div>          
 
 
@@ -447,11 +455,11 @@
             </p>
             <figure>
               <img src="./static/images/qwen3-4b_01.png" alt="Math Reasoning Performance" class="teaser-image">
-              <figcaption><strong>Figure 2:</strong> Math Reasoning Performance. Qwen3-4B-Base trained on DAPO17k dataset. </figcaption>
+              <figcaption><strong>Figure 4:</strong> Math Reasoning Performance. Qwen3-4B-Base trained on DAPO17k dataset. </figcaption>
             </figure>            
             <figure>
               <img src="./static/images/knk_plots_01.png" alt="Logic Puzzle (Knights-and-Knaves) Reasoning Performance" class="teaser-image">
-              <figcaption><strong>Figure 3:</strong> Logic Puzzle (Knights-and-Knaves) Reasoning Performance. Qwen2.5-1.5B-Instruct trained on Knight-Knave dataset with mixed difficulty levels. </figcaption>
+                <figcaption><strong>Figure 5:</strong> Logic Puzzle (Knights-and-Knaves) Reasoning Performance. Qwen2.5-1.5B-Instruct trained on Knight-Knave dataset with mixed difficulty levels. </figcaption>
             </figure>    
 
             <p>
@@ -463,7 +471,7 @@
             <figure>
               <img src="./static/images/js_lambda_ema_01.png" alt="Adaptive shrinkage of the JS coefficient" class="teaser-image", style="width: 40%;">
               <figcaption>
-                <strong>Figure 3:</strong> Adaptive shrinkage of the JS coefficient during training. The shrinkage coefficient decreases throughout training, and is smaller when there is a larger number of rollouts.
+                <strong>Figure 6:</strong> Adaptive shrinkage of the JS coefficient during training. The shrinkage coefficient decreases throughout training, and is smaller when there is a larger number of rollouts.
               </figcaption>
             </figure>
             <p>
