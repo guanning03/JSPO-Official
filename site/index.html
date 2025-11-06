@@ -445,11 +445,20 @@
             </figure>    
 
             <p>
-              We observe two key training dynamics that reveal the advantage of JS baseline: namely, the <strong>adaptive shrinkage</strong> of the James–Stein coefficient and the <strong>reduced variance</strong> of the policy gradient.
+              We observe two key training dynamics that reveal the advantage of JS baseline: namely, the <strong>adaptive shrinkage</strong> of the JS coefficient, and the <strong>reduced variance</strong> of the policy gradient.
             </p>
             <p>
-              <strong>Variance Reduction.</strong> JSPO’s goal is to lower the variance of the vector‑valued policy‑gradient
-              estimator \(g(x,Y;\theta)\). During training, we track the (unbiased) scalar summary \(\mathrm{Var}[g]\) via micro‑batch
+              <strong>Adaptive Shrinkage.</strong> The shrinkage coefficient \(\lambda_i\) is adaptively chosen to minimize the batch MSE of value estimates. In the figure below, we plot the shrinkage coefficient \(\lambda_i\) during training under different numbers of rollout per prompt. We can see that the shrinkage coefficient is smaller when we choose a larger number of rollouts, or when our training goes into later stages. These results aligns with the intuition that shrinkage coefficient measures the extent of benefit that using batch mean could bring. If the number of rollouts is already rather large, or the policy becomes very deterministic in final training stages, than the benefit of taking cross-prompt information into account is smaller, and we should use a smaller shrinkage coefficient when computing the baseline. 
+            </p>
+            <figure>
+              <img src="./static/images/js_lambda_ema_01.png" alt="Adaptive shrinkage of the JS coefficient" class="teaser-image", style="width: 40%;">
+              <figcaption>
+                <strong>Figure 3:</strong> Adaptive shrinkage of the JS coefficient during training. The shrinkage coefficient decreases throughout training, and is smaller when there is a larger number of rollouts.
+              </figcaption>
+            </figure>
+            <p>
+              <strong>Variance Reduction.</strong> The goal of using JS baseline is to lower the variance of the vector‑valued policy‑gradient
+              estimator \(g(x,Y;\theta)\). During training, we estimate the variance of the policy gradient \(\mathrm{Var}[g]\) based on multiple micro‑batch
               gradients:
             </p>
             <p>
@@ -463,9 +472,9 @@
             </p>
 
             <figure>
-              <img src="./static/images/variance_reduction.png" alt="Estimated policy‑gradient variance during training: JSPO vs. RLOO" class="teaser-image", style="width: 90%;">
+              <img src="./static/images/variance_reduction_01.png" alt="Estimated policy‑gradient variance during training: JSPO vs. RLOO" class="teaser-image", style="width: 70%;">
               <figcaption>
-                <strong>Figure 3:</strong> Estimated variance of the policy gradient during training (lower is better). With the
+                <strong>Figure 4:</strong> Estimated variance of the policy gradient during training (lower is better). With the
                 James–Stein baseline, variance consistently drops across models and tasks, yielding steadier RL updates.
               </figcaption>
             </figure>
