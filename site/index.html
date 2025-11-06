@@ -356,8 +356,12 @@
             <p>
               so variance reduction of policy gradient estimator reduces to estimating the value function \(\mu(x)\) accurately. Therefore, for different kinds of baselines, we would like to see how close the estimation is compared with the value function. Specifically, consider two different ways, empirical prompt mean (which is most commonly used in RLVR such as GRPO) and empirical batch mean (some algorithms, such as REINFORCE++ adopts this)
             </p>
-            <p>
-              [Formulation of prompt mean] [Formulation of batch mean]
+            <p style="text-align: center;">
+              <strong>Prompt Mean:</strong> 
+              \(\displaystyle b_i^j = \hat{\mu}_i^{-j} = \frac{1}{m-1} \sum_{\substack{k=1\\k\neq j}}^{m} r_i^k\)
+              <br><br>
+              <strong>Batch Mean:</strong> 
+              \(\displaystyle b_i^j = \hat{\mu} = \frac{1}{nm} \sum_{i=1}^{n} \sum_{j=1}^{m} r_i^j\)
             </p>
             <p>
               We computed the mean squared error (MSE) between these baselines and the value function (which could be estimated by rollout for many times) during RLVR training and in different number of rollouts \(n\). As shown in the figure below, the MSE of prompt mean is lower in most cases, while batch mean is better when the number of rollouts is small or in early training stages. So how can we create a baseline estimator which enjoys lowest MSE with the ground truth value function in all scenarios?
